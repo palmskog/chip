@@ -144,71 +144,51 @@ elim => [|n IHn].
 Qed.
 
 Lemma dfs_sdfs_in : forall (g : T -> seq T) n (s : seq T) (ms : MS.t) x z,
-    (forall y, y \in s = MS.mem y ms) ->
-    x \in dfs g n s z = MS.mem x (sdfs g n ms z).
+ (forall y, y \in s = MS.mem y ms) ->
+ x \in dfs g n s z = MS.mem x (sdfs g n ms z).
 Proof.
 move => g.
 elim => //=; first by move => s ms x Hy; case: ifP; case: ifP.
 move => n IH s ms x z Hy.
-case: ifP; case: ifP => //=.
-- move => Hx Hs.
-  case Hm: (MS.mem _ _) => //.
-  * move/negP: Hx.
-    case.
-    by rewrite -Hy.
-  * move/negP: Hx.
-    case.
-    by rewrite -Hy.
-- move => Hx Hs.
-  case Hm: (MS.mem _ _) => //.
-  * move/negP: Hs.
-    case.
-    by rewrite Hy.
-  * move/negP: Hs.
-    case.
-    by rewrite Hy.
-- move => Hz Hs.
-  have Hy': forall y, (y \in z :: s) = MS.mem y (MS.add z ms).
-    move => y.
-    rewrite in_cons.
-    apply/orP.
-    case: ifP => Hm.
-    * move/MSF.mem_2: Hm.
-      move/MSF.add_3 => Hzy.
-      case Hyz: (y == z); first by left.
-      right.
-      rewrite Hy.
-      apply/MSF.mem_1.
-      apply Hzy.
-      move => Hyz'.
-      move/negP/negP/eqP: Hyz.
-      by case.
-    * move => Hyz.
-      case: Hyz.
-      + move/eqP => Hyz.
-        move/negP: Hm.
-        case.
-        apply/MSF.mem_1.
-        by apply/MSF.add_1.
-      + move => Hyz.
-        move/negP: Hm.
-        case.
-        apply/MSF.mem_1.
-        apply/MSF.add_2.
-        apply/MSF.mem_2.
-        by rewrite -Hy.
-  move: Hy'.
-  set s' := z :: s.
-  set ms' := MS.add z ms.
-  set s0 := g z.
-  move: s0 s' ms'.
-  elim => //=.
-  move => z0 s0 IH' s' ms' Hs'.
-  by erewrite IH'; eauto.
+case: ifP; case: ifP => //= Hx Hs.
+- by apply/idP/idP => Hxy; move/negP: Hx; case; rewrite -Hy.
+- by apply/idP/idP => Hxy; move/negP: Hs; case; rewrite Hy.
+- suff Hy': forall y, (y \in z :: s) = MS.mem y (MS.add z ms).
+    move: Hy'.
+    set s' := z :: s.
+    set ms' := MS.add z ms.
+    set s0 := g z.
+    move: s0 s' ms'.
+    elim => //=.
+    move => z0 s0 IH' s' ms' Hs'.
+    by erewrite IH'; eauto.
+  move => y.
+  rewrite in_cons.
+  apply/orP.
+  case: ifP => Hm.
+  * move/MSF.mem_2: Hm.
+    move/MSF.add_3 => Hzy.
+    case Hyz: (y == z); first by left.
+    right.
+    rewrite Hy.
+    apply/MSF.mem_1.
+    apply Hzy.
+    move => Hyz'.
+    by move/negP/negP/eqP: Hyz; case.
+  * move => Hyz; case: Hyz.
+    + move/eqP => Hyz.
+      move/negP: Hm.
+      case.
+      by apply/MSF.mem_1/MSF.add_1.
+    + move => Hyz.
+      move/negP: Hm.
+      case.
+      apply/MSF.mem_1/MSF.add_2/MSF.mem_2.
+      by rewrite -Hy.
 Qed.
 
 Definition srclosure g :=
-  foldr (fun x s => sdfs g #|T| s x) MS.empty.
+ foldr (fun x s => sdfs g #|T| s x) MS.empty.
 
 Definition srclosure' g :=
  foldl (sdfs g #|T|) MS.empty.
@@ -217,14 +197,12 @@ Lemma rclosure_srclosure : forall g s x,
   x \in rclosure g s = MS.mem x (srclosure g s).
 Proof.
 move => g.
-elim => //=.
-- move => x.
-  rewrite in_nil.
-  case Hx: (MS.mem x MS.empty) => //.
-  move/MSF.mem_2: Hx.
-  by move/MSF.empty_1.
-- move => x s IH y.
-  exact: dfs_sdfs_in.
+elim => //=; last by move => x s IH y; apply: dfs_sdfs_in.
+move => x.
+rewrite in_nil.
+apply/idP/idP => //.
+move/MSF.mem_2.
+by move/MSF.empty_1.
 Qed.
 
 Lemma in_foldr_mem : forall g s0 n x,
@@ -232,55 +210,27 @@ Lemma in_foldr_mem : forall g s0 n x,
  MS.mem x (foldr (fun x s => sdfs g n s x) MS.empty s0).
 Proof.
 move => g.
-elim => //=.
-- move => n x.
-  rewrite in_nil.
-  case Hm: (MS.mem x MS.empty) => //.
-  move/MSF.mem_2: Hm.
-  by move/MSF.empty_1.
-- move => x s IH n y.
-  by erewrite dfs_sdfs_in; eauto.
-Qed.
-
-Lemma srclosure_in_lr : forall g s x,
-  MS.mem x (foldl (sdfs g #|T|) MS.empty s) ->
-  MS.mem x (foldr (fun x s => sdfs g #|T| s x) MS.empty s).
-Proof.
-move => g s x.
-have {1} ->: s = rev (rev s) by rewrite revK.
-rewrite foldl_rev.
-rewrite -(in_foldr_mem g s) -(in_foldr_mem g (rev s)).
-rewrite (@closure_eqi _ _ (rev s) s) //.
-move => y.
-have Hs := has_rev (pred1 y) s.
-by rewrite 2!has_pred1 in Hs.
-Qed.
-
-Lemma srclosure_in_rl : forall g s x,
-  MS.mem x (foldr (fun x s => sdfs g #|T| s x) MS.empty s) ->
-  MS.mem x (foldl (sdfs g #|T|) MS.empty s).
-Proof.
-move => g s x.
-have {2} ->: s = rev (rev s) by rewrite revK.
-rewrite foldl_rev.
-rewrite -(in_foldr_mem g s) -(in_foldr_mem g (rev s)).
-rewrite (@closure_eqi _ _ s (rev s)) //.
-move => y.
-have Hs := has_rev (pred1 y) s.
-by rewrite 2!has_pred1 in Hs.
+elim => //=; last by move => x s IH n y; erewrite dfs_sdfs_in; eauto.
+move => n x.
+rewrite in_nil.
+case Hm: (MS.mem x MS.empty) => //.
+move/MSF.mem_2: Hm.
+by move/MSF.empty_1.
 Qed.
 
 Lemma srclosure_srclosure' : forall g s x,
-  MS.mem x (srclosure g s) = MS.mem x (srclosure' g s).
+ MS.mem x (srclosure g s) = MS.mem x (srclosure' g s).
 Proof.
 move => g s x.
-case Hx: (MS.mem _ _); case Hx': (MS.mem _ _) => //.
-- move/negP: Hx'.
-  case.
-  exact: srclosure_in_rl.
-- move/negP: Hx.
-  case.
-  exact: srclosure_in_lr.
+apply/idP/idP.
+- have {2} ->: s = rev (rev s) by rewrite revK.
+  rewrite /srclosure /srclosure' foldl_rev.
+  rewrite -(in_foldr_mem g s) -(in_foldr_mem g (rev s)) (@closure_eqi _ _ s (rev s)) // => y.
+  by move: (has_rev (pred1 y) s); rewrite 2!has_pred1.
+- have {1} ->: s = rev (rev s) by rewrite revK.
+  rewrite /srclosure' /srclosure foldl_rev.
+  rewrite -(in_foldr_mem g s) -(in_foldr_mem g (rev s)) (@closure_eqi _ _ (rev s) s) // => y.
+  by move: (has_rev (pred1 y) s); rewrite 2!has_pred1.
 Qed.
 
 Lemma rclosure'_srclosure' : forall g s x,
@@ -300,15 +250,18 @@ Lemma elements_in_mem : forall s x,
   x \in MS.elements s = MS.mem x s.
 Proof.
 move => s x.
-case Hi: (x \in _); case Hm: (MS.mem _ _) => //.
-- move/negP: Hm.
-  case.
-  apply/MSF.mem_1.
-  apply/MSF.elements_2.
-  apply/InA_alt.
-  exists x.
-  split => //.
-  move: Hi.
+apply/idP/idP; last first.
+- move/MSF.mem_2/MSF.elements_1.
+  move/InA_alt => [y [Hx Hy]].
+  rewrite Hx; move: Hy.
+  set e := MS.elements _.
+  elim: e => //=.
+  move => z e IH.
+  case; first by move =>->; rewrite in_cons; apply: predU1l.
+  by rewrite in_cons => Hy; apply predU1r; apply: IH.
+- move => Hm.
+  apply/MSF.mem_1/MSF.elements_2/InA_alt.
+  exists x; split => //; move: Hm.
   set e := MS.elements _.
   elim: e => //.
   move => y e IH.
@@ -316,31 +269,12 @@ case Hi: (x \in _); case Hm: (MS.mem _ _) => //.
   move/orP; case; first by move/eqP; left.
   move => Hx.
   by right; apply: IH.
-- move/negP: Hi.
-  case.
-  move: Hm.
-  move/MSF.mem_2.
-  move/MSF.elements_1.
-  move/InA_alt => [y [Hx Hy]].
-  rewrite Hx.
-  move: Hy.
-  set e := MS.elements _.
-  elim: e => //=.
-  move => z e IH.
-  case.
-  * move =>->.
-    rewrite in_cons.
-    apply/orP.
-    by left.
-  * rewrite in_cons => Hy.
-    apply/orP; right.
-    exact: IH.
 Qed.
 
 Lemma elts_srclosureP g (modified : seq T) x :
-  reflect
-    (exists2 v, v \in modified & connect g v x)
-    (x \in elts_srclosure (rgraph g) modified).
+ reflect
+   (exists2 v, v \in modified & connect g v x)
+   (x \in elts_srclosure (rgraph g) modified).
 Proof.
 apply: (iffP idP).
 - rewrite elements_in_mem -rclosure_srclosure.
@@ -351,9 +285,9 @@ apply: (iffP idP).
 Qed.
 
 Lemma elts_srclosurePg g (modified : seq T) x :
-  reflect
-    (exists2 v, v \in modified & connect (grel g) v x)
-    (x \in elts_srclosure g modified).
+ reflect
+   (exists2 v, v \in modified & connect (grel g) v x)
+   (x \in elts_srclosure g modified).
 Proof.
 apply: (iffP idP).
 - rewrite elements_in_mem -rclosure_srclosure.
@@ -364,9 +298,9 @@ apply: (iffP idP).
 Qed.
 
 Lemma elts_srclosure'P g (modified : seq T) x :
-  reflect
-    (exists2 v, v \in modified & connect g v x)
-    (x \in elts_srclosure' (rgraph g) modified).
+ reflect
+   (exists2 v, v \in modified & connect g v x)
+   (x \in elts_srclosure' (rgraph g) modified).
 Proof.
 apply: (iffP idP).
 - rewrite elements_in_mem -rclosure'_srclosure' -rclosure_rclosure'_i.
@@ -390,7 +324,7 @@ apply: (iffP idP).
 Qed.
 
 Lemma elts_srclosure_uniq : forall g s,
-  uniq (elts_srclosure g s).
+ uniq (elts_srclosure g s).
 Proof.
 move => g s.
 rewrite /elts_srclosure.
