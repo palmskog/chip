@@ -1,24 +1,21 @@
 Change Impact Analysis in Coq and OCaml
 =======================================
 
-A basic requirement is to install [OPAM](http://opam.ocaml.org/doc/Install.html).
-
-Then create an OPAM switch for OCaml 4.06.1:
-```
-opam update
-opam switch 4.06.1
-eval `opam config env`
-```
+Requirements:
+- Coq 8.8 or later
+- MathComp 1.7.0 or later (`ssreflect` and `fingroup`)
+- OCaml 4.05.0 or later
+- Ocamlbuild
+- yojson
+- extlib
 
 Building the Coq development
 ----------------------------
 
-First install the requirements:
+We recommend installing the requirements via [OPAM](http://opam.ocaml.org/doc/Install.html):
 ```
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam pin add coq 8.8.1
-opam pin add coq-mathcomp-ssreflect 1.7.0
-opam install coq-mathcomp-fingroup
+opam install coq-mathcomp-ssreflect coq-mathcomp-fingroup ocamlbuild yojson extlib
 ```
 
 Then run:
@@ -29,11 +26,6 @@ This will build the whole project and check all the proofs.
 
 Building the Chip tool
 ----------------------
-
-First install the Coq requirements as above. Then install the OCaml requirements:
-```
-opam install ocamlbuild yojson extlib
-```
 
 To build regular Chip, run
 ```
