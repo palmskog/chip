@@ -1,0 +1,5 @@
+[
+    { "uri": "file:/home/user/projects/chip/examples/simple/target/classes/p/A.class", "id": 4198844360, "checkable": false, "checksum": "10ba792368d81930027e872c2ad9a39f" },
+    { "uri": "file:/home/user/projects/chip/examples/simple/target/classes/p/C.class", "id": 3873306685, "checkable": false, "checksum": "af6a1e2906998db1156805401ce35ed7" },
+    { "uri": "file:/home/user/projects/chip/examples/simple/target/test-classes/p/ATest.class", "id": 1571199077, "checkable": true, "checksum": "010bb09272ec602c7c77f365cfedf9dd" }
+]

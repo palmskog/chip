@@ -1,0 +1,29 @@
+OCAMLBUILD = ocamlbuild -tag safe_string -I ocaml -cflag -g -package extlib
+OCAMLBUILD_JSON = $(OCAMLBUILD) -package yojson
+
+IMPACTED = ocaml/impacted.ml ocaml/impacted.mli
+CHANGE = ocaml/util.ml ocaml/change_impact.ml ocaml/change_impact.mli
+
+default: filtering.native
+
+filtering.native: $(IMPACTED) $(CHANGE) ocaml/filtering.ml
+	perl scripts/remove_module.pl ocaml/impacted
+	$(OCAMLBUILD_JSON) filtering.native
+
+topfiltering.native: $(IMPACTED) $(CHANGE) ocaml/topfiltering.ml
+	perl scripts/remove_module.pl ocaml/impacted
+	$(OCAMLBUILD_JSON) topfiltering.native
+
+filteringinv.native: $(IMPACTED) $(CHANGE) ocaml/filteringinv.ml
+	perl scripts/remove_module.pl ocaml/impacted
+	$(OCAMLBUILD_JSON) filteringinv.native
+
+$(IMPACTED):
+	+$(MAKE) -C ../.. extraction/impacted/$@
+
+clean:
+	$(OCAMLBUILD) -clean
+
+.PHONY: default clean $(IMPACTED)
+
+.NOTPARALLEL: $(IMPACTED)

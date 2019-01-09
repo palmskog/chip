@@ -1,0 +1,5 @@
+ocaml/impacted.ml
+ocaml/impacted.mli
+_build
+*.native
+gmon.out

@@ -1,0 +1,29 @@
+-Q core chip
+-Q extraction/impacted/coq chip
+-Q extraction/impacted-rbt/coq chip
+-arg "-w -notation-overridden,-local-declaration,-redundant-canonical-projection,-projection-no-head-constant"
+core/extra.v
+core/connect.v
+core/acyclic.v
+core/closure.v
+core/closure_example.v
+core/tarjan.v
+core/kosaraju.v
+core/kosaraju_acyclic.v
+core/tarjan_acyclic.v
+core/change.v
+core/run.v
+core/string.v
+core/finn.v
+core/finn_set.v
+core/run_seq.v
+core/topos.v
+core/ordtype.v
+core/dfs_set.v
+core/close_dfs.v
+core/hierarchical.v
+core/hierarchical_correct.v
+core/hierarchical_sub.v
+core/hierarchical_sub_correct.v
+extraction/impacted/coq/extract_impacted.v
+extraction/impacted-rbt/coq/extract_impacted_rbt.v
