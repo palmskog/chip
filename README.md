@@ -59,7 +59,7 @@ Adapted from work by [Nanevski et al.](https://github.com/imdea-software/fcsl-pc
 Core definitions and lemmas:
 
 - `core/closure.v`: basic definition of transitive closures of sets
-- `core/run.v`: set-based definitions of dependency graphs, impactedness, and freshness
+- `core/check.v`: set-based definitions of dependency graphs, impactedness, and freshness
 - `core/change.v`: correctness argument for basic change impact analysis definitions
 - `core/hierarchical.v`: overapproximation strategy for change impact analysis in hierarchical systems
 - `core/hierarchical_correct.v`: correctness proofs for overapproximation strategy
@@ -74,6 +74,6 @@ Implementation-related definitions and lemmas:
 
 - `core/close_dfs.v`: refined sequence-based transitive closure computation
 - `core/dfs_set.v`: refined transitive closure computation using MSet functor (to enable red-black trees)
-- `core/run_seq.v`: sequence-based change impact analysis definitions, optimized topological sorting using impact analysis
+- `core/check_seq.v`: sequence-based change impact analysis definitions, optimized topological sorting using impact analysis
 - `core/finn.v`: regular instantiation of sequence-based definitions for the ordinal finite type
 - `core/finn_set.v`: red-black tree instantiation of sequence-based definitions for the ordinal finite type

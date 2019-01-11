@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect acyclic closure run change hierarchical_sub.
+Require Import extra connect acyclic closure check change hierarchical_sub.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -36,11 +36,11 @@ Local Notation g_top_rev := [rel x y | g_top y x].
 
 Local Notation g_bot_rev := [rel x y | g_bot y x].
 
-Variables (runnable' : pred V') (runnable : pred V).
+Variables (checkable' : pred V') (checkable : pred V).
 
 Variable R : eqType.
 
-Variables (run : V -> R) (run' : V' -> R).
+Variables (check : V -> R) (check' : V' -> R).
 
 Variables (p : U -> {set V}) (p' : U' -> {set V'}).
 
@@ -76,19 +76,19 @@ Hypothesis f_top_equal_g_top :
 Hypothesis f_bot_equal_g_bot :
   forall v, f_bot v = f'_bot (val v) -> forall v', g_bot_V' (val v) v' = g'_bot (val v) v'.
 
-Hypothesis runnable_bot :
-  forall v, f_bot v = f'_bot (val v) -> runnable v = runnable' (val v).
+Hypothesis checkable_bot :
+  forall v, f_bot v = f'_bot (val v) -> checkable v = checkable' (val v).
 
-Hypothesis run_bot :
-  forall v, runnable v -> runnable' (val v) ->
+Hypothesis check_bot :
+  forall v, checkable v -> checkable' (val v) ->
   (forall v', connect g_bot_V' (val v) v' = connect g'_bot (val v) v') ->
   (forall v', connect g_bot_V' (val v) (val v') -> f_bot v' = f'_bot (val v')) ->
-  run v = run' (val v).
+  check v = check' (val v).
 
 Variable V_result_cert : seq (V * R).
 
 Hypothesis V_result_certP :
-  forall v r, reflect (runnable v /\ run v = r) ((v,r) \in V_result_cert).
+  forall v r, reflect (checkable v /\ check v = r) ((v,r) \in V_result_cert).
 
 Hypothesis V_result_cert_uniq : uniq [seq vr.1 | vr <- V_result_cert].
 
@@ -99,54 +99,54 @@ Local Notation g_bot_sub := [rel x y : V_sub | g_bot (val x) (val y)].
 Definition V'_result_filter_cert_sub :=
   [seq (val vr.1, vr.2) | vr <- V_result_cert & val vr.1 \notin impactedVV' g_bot (modifiedV f'_bot f_bot)].
 
-Definition run_all_cert_sub :=
-  run_impactedV'_sub_cert f'_top f'_bot g_top g_bot f_top f_bot runnable' run' p ++ V'_result_filter_cert_sub.
+Definition check_all_cert_sub :=
+  check_impactedV'_sub_cert f'_top f'_bot g_top g_bot f_top f_bot checkable' check' p ++ V'_result_filter_cert_sub.
 
-Definition run_all_cert_V'_sub :=
- [seq vr.1 | vr <- run_all_cert_sub].
+Definition check_all_cert_V'_sub :=
+ [seq vr.1 | vr <- check_all_cert_sub].
 
-Lemma run_all_cert_complete_sub :
-  forall (v : V'), runnable' v -> v \in run_all_cert_V'_sub.
+Lemma check_all_cert_complete_sub :
+  forall (v : V'), checkable' v -> v \in check_all_cert_V'_sub.
 Proof.
 move => v Hc.
-rewrite /run_all_cert_V'_sub /run_all_cert_sub.
-rewrite /run_impactedV'_sub_cert.
-rewrite /runnable_impacted_fresh_sub.
-rewrite /runnable_impactedV'_sub.
+rewrite /check_all_cert_V'_sub /check_all_cert_sub.
+rewrite /check_impactedV'_sub_cert.
+rewrite /checkable_impacted_fresh_sub.
+rewrite /checkable_impactedV'_sub.
 rewrite impactedV'_sub_eq.
-apply: run_all_cert_complete; eauto.
+apply: check_all_cert_complete; eauto.
 - exact: p_neq.
 - exact: p_partition.
 - exact: g_bot_top.
 - exact: f_top_bot.
 Qed.
 
-Lemma run_all_cert_sound_sub :
-  forall (v : V') (r : R), (v,r) \in run_all_cert_sub ->
-  runnable' v /\ run' v = r.
+Lemma check_all_cert_sound_sub :
+  forall (v : V') (r : R), (v,r) \in check_all_cert_sub ->
+  checkable' v /\ check' v = r.
 Proof.
 move => v r.
-rewrite /run_all_cert_sub.
-rewrite /run_impactedV'_sub_cert.
-rewrite /runnable_impacted_fresh_sub.
-rewrite /runnable_impactedV'_sub.
+rewrite /check_all_cert_sub.
+rewrite /check_impactedV'_sub_cert.
+rewrite /checkable_impacted_fresh_sub.
+rewrite /checkable_impactedV'_sub.
 rewrite impactedV'_sub_eq.
-apply: run_all_cert_sound; eauto.
+apply: check_all_cert_sound; eauto.
 - exact: p_neq.
 - exact: p_partition.
 - exact: g_bot_top.
 - exact: f_top_bot.
 Qed.
 
-Lemma run_all_cert_V'_sub_uniq : uniq run_all_cert_V'_sub.
+Lemma check_all_cert_V'_sub_uniq : uniq check_all_cert_V'_sub.
 Proof.
-rewrite /run_all_cert_V'_sub.
-rewrite /run_all_cert_sub.
-rewrite /run_impactedV'_sub_cert.
-rewrite /runnable_impacted_fresh_sub.
-rewrite /runnable_impactedV'_sub.
+rewrite /check_all_cert_V'_sub.
+rewrite /check_all_cert_sub.
+rewrite /check_impactedV'_sub_cert.
+rewrite /checkable_impacted_fresh_sub.
+rewrite /checkable_impactedV'_sub.
 rewrite impactedV'_sub_eq.
-apply: run_all_cert_V'_uniq; eauto.
+apply: check_all_cert_V'_uniq; eauto.
 - exact: p_neq.
 - exact: p_partition.
 - exact: g_bot_top.

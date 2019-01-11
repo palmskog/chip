@@ -1,9 +1,9 @@
 open Impacted
 open Util
 
-let runnable_impacted num successors f_new f_old rnb =
+let checkable_impacted num successors f_new f_old rnb =
   Obj.magic
-    (succs_runnable_impacted
+    (succs_checkable_impacted
        num (num-1)
        (Obj.magic successors)
        (Obj.magic (fun x -> char_list_of_string (f_new x)))
@@ -18,9 +18,9 @@ let impacted_fresh num_new num_old successors f_new f_old =
        (Obj.magic (fun x -> char_list_of_string (f_new x)))
        (Obj.magic (fun x -> char_list_of_string (f_old x))))
 
-let runnable_impacted_fresh num_new num_old successors f_new f_old rnb =
+let checkable_impacted_fresh num_new num_old successors f_new f_old rnb =
   Obj.magic
-    (succs_runnable_impacted_fresh  
+    (succs_checkable_impacted_fresh  
        num_new (num_old-1)
        (Obj.magic successors)
        (Obj.magic (fun x -> char_list_of_string (f_new x)))

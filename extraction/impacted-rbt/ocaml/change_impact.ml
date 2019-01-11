@@ -15,7 +15,7 @@ let impacted_fresh num_new num_old successors f_new f_old =
        (Obj.magic (fun x -> char_list_of_string (f_new x)))
        (Obj.magic (fun x -> char_list_of_string (f_old x))))
 
-let runnable_impacted_fresh num_new num_old successors f_new f_old rnb =
+let checkable_impacted_fresh num_new num_old successors f_new f_old rnb =
   let module Ords =
       struct
         let n = num_new
@@ -24,7 +24,7 @@ let runnable_impacted_fresh num_new num_old successors f_new f_old rnb =
   in
   let module OCI = OrdinalsRunnableImpacted(Ords) in
   Obj.magic
-    (OCI.succs_runnable_impacted_fresh
+    (OCI.succs_checkable_impacted_fresh
        (Obj.magic successors)
        (Obj.magic (fun x -> char_list_of_string (f_new x)))
        (Obj.magic (fun x -> char_list_of_string (f_old x)))

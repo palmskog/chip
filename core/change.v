@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect acyclic closure run.
+Require Import extra connect acyclic closure check.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -32,15 +32,15 @@ Variable g : rel V.
 
 Local Notation grev := [rel x y | g y x].
 
-Variable runnable' : pred V'.
+Variable checkable' : pred V'.
 
-Variable runnable : pred V.
+Variable checkable : pred V.
 
 Variable R : eqType.
 
-Variable run' : V' -> R.
+Variable check' : V' -> R.
 
-Variable run : V -> R.
+Variable check : V -> R.
 
 Definition insub_g (x y : V') :=
 match insub x, insub y with
@@ -113,31 +113,31 @@ Qed.
 Hypothesis f_equal_g :
   forall v, f v = f' (val v) -> forall v', gV' (val v) v' = g' (val v) v'.
 
-(* Assumption: runnability is the same if artifact is the same *)
-Hypothesis runnable_V_V' :
-  forall v, f v = f' (val v) -> runnable v = runnable' (val v).
+(* Assumption: checknability is the same if artifact is the same *)
+Hypothesis checkable_V_V' :
+  forall v, f v = f' (val v) -> checkable v = checkable' (val v).
 
 (*
 Assumption:
-if the dependency (sub)graph rooted in a runnable vertex
-is well-founded and unchanged, then the outcome of running
+if the dependency (sub)graph rooted in a checkable vertex
+is well-founded and unchanged, then the outcome of checkning
 the vertex (in the new graph) is the same as the old outcome
  *)
-Hypothesis run_V_V' :
-  forall v, runnable v -> runnable' (val v) ->
+Hypothesis check_V_V' :
+  forall v, checkable v -> checkable' (val v) ->
   (forall v', connect gV' (val v) v' = connect g' (val v) v') ->
   (forall v', connect gV' (val v) (val v') -> f v' = f' (val v')) ->
-  run v = run' (val v).
+  check v = check' (val v).
 
 Variable V_result_cert : seq (V * R).
 
 Hypothesis V_result_certP :
-  forall v r, reflect (runnable v /\ run v = r) ((v,r) \in V_result_cert).
+  forall v r, reflect (checkable v /\ check v = r) ((v,r) \in V_result_cert).
 
 Hypothesis V_result_cert_uniq : uniq [seq vr.1 | vr <- V_result_cert].
 
 Lemma V_result_cert_complete :
-  forall v r, runnable v -> run v == r -> (v,r) \in V_result_cert.
+  forall v r, checkable v -> check v == r -> (v,r) \in V_result_cert.
 Proof.
 move => v r Hc.
 move/eqP => Hr.
@@ -145,7 +145,7 @@ by apply/V_result_certP.
 Qed.
 
 Lemma V_result_cert_sound :
-  forall v r, (v,r) \in V_result_cert -> runnable v /\ run v == r.
+  forall v r, (v,r) \in V_result_cert -> checkable v /\ check v == r.
 Proof.
 move => v r.
 move/V_result_certP => [Hc Hr].
@@ -155,8 +155,8 @@ Qed.
 Definition V'_result_filter_cert :=
  [seq (val vr.1, vr.2) | vr <- V_result_cert & val vr.1 \notin impactedVV' g (modifiedV f' f)].
 
-Lemma V_result_filter_cert_runnable' :
-  forall (v : V') (r : R), (v,r) \in V'_result_filter_cert -> runnable' v.
+Lemma V_result_filter_cert_checkable' :
+  forall (v : V') (r : R), (v,r) \in V'_result_filter_cert -> checkable' v.
 Proof.
 move => v r.
 move/mapP.
@@ -185,7 +185,7 @@ move/V_result_certP: Hin.
 move => [Hvc Hc].
 case Hf: (f v' == f' (val v')).
   move/eqP: Hf.
-  by move/runnable_V_V'=>-<-.
+  by move/checkable_V_V'=>-<-.
 move/negP/negP: Hf => Hf.
 case: Hm.
 exists v'; first by rewrite in_set.
@@ -193,20 +193,20 @@ apply/connectP.
 by exists [::].
 Qed.
 
-Definition run_all_cert :=
-  run_impactedV'_cert f' f g runnable' run' ++ V'_result_filter_cert.
+Definition check_all_cert :=
+  check_impactedV'_cert f' f g checkable' check' ++ V'_result_filter_cert.
 
-Lemma run_all_cert_cases :
-  forall v r, (v, r) \in run_all_cert ->
- ((v, r) \in run_impactedV'_cert f' f g runnable' run' /\ (v, r) \notin V'_result_filter_cert) \/
- ((v, r) \in V'_result_filter_cert /\ (v,r) \notin run_impactedV'_cert f' f g runnable' run').
+Lemma check_all_cert_cases :
+  forall v r, (v, r) \in check_all_cert ->
+ ((v, r) \in check_impactedV'_cert f' f g checkable' check' /\ (v, r) \notin V'_result_filter_cert) \/
+ ((v, r) \in V'_result_filter_cert /\ (v,r) \notin check_impactedV'_cert f' f g checkable' check').
 Proof.
 move => v b.
 rewrite mem_cat.
 move/orP.
 case => Hi.
 - left; split => //.
-  move/run_impactedV'_certP: Hi.
+  move/check_impactedV'_certP: Hi.
   move => [Hc [Hv Hi]].
   apply/negP => Hp.
   move: Hp.
@@ -233,7 +233,7 @@ case => Hi.
 - right; split => //.
   apply/negP.
   move => Hm.
-  move/run_impactedV'_certP: Hm.
+  move/check_impactedV'_certP: Hm.
   move/mapP: Hi.
   move => [[v' b'] Hb] /=.
   case.
@@ -254,16 +254,16 @@ case => Hi.
   by apply/eqP.
 Qed.
 
-Definition run_all_cert_V' :=
- [seq vr.1 | vr <- run_all_cert].
+Definition check_all_cert_V' :=
+ [seq vr.1 | vr <- check_all_cert].
 
-Lemma run_all_cert_V'_uniq : uniq run_all_cert_V'.
+Lemma check_all_cert_V'_uniq : uniq check_all_cert_V'.
 Proof.
 rewrite map_inj_in_uniq.
 - rewrite cat_uniq.
   apply/andP.
   split; last (apply/andP; split).
-  * have Hu := run_impactedV'_cert_uniq f' f g runnable' run'.
+  * have Hu := check_impactedV'_cert_uniq f' f g checkable' check'.
     move: Hu.
     exact: map_uniq.
   * apply/negP.
@@ -380,8 +380,8 @@ rewrite map_inj_in_uniq.
       by rewrite -Hu.
 Qed.
 
-Lemma run_all_cert_complete :
-  forall (v : V'), runnable' v -> v \in run_all_cert_V'.
+Lemma check_all_cert_complete :
+  forall (v : V'), checkable' v -> v \in check_all_cert_V'.
 Proof.
 move => v Hc.
 have H_sp := (insubP [subType of V] v).
@@ -397,26 +397,26 @@ destruct H_sp.
   apply/mapP.
   (* outline:
      - either in filtered or impacted
-     - if in filtered, take run u
-     - if in impacted, take run' v
+     - if in filtered, take check u
+     - if in impacted, take check' v
   *)
   case Hv': (v \in impactedV' f' f g).
   - have Hv'': v \in impactedV' f' f g by [].
     move {Hv'}.
-    exists (v, run' v); last by [].
+    exists (v, check' v); last by [].
     rewrite mem_cat.
     apply/orP.
     left.
-    apply/run_impactedV'_certP.
+    apply/check_impactedV'_certP.
     by split.
   - have Hv'': v \notin impactedV' f' f g by apply/negP; rewrite Hv'.
     move {Hv'}.
-    exists (v, run u); last by [].
+    exists (v, check u); last by [].
     rewrite mem_cat.
     apply/orP.
     right.
     apply/mapP.
-    exists (u, run u); last by rewrite /= e.
+    exists (u, check u); last by rewrite /= e.
     rewrite mem_filter.
     apply/andP.
     rewrite /= in e.
@@ -431,7 +431,7 @@ destruct H_sp.
       by rewrite -e.
     * apply/V_result_certP.
       split => //.
-      suff H_suff: f u = f' (val u) by rewrite runnable_V_V' //= e.
+      suff H_suff: f u = f' (val u) by rewrite checkable_V_V' //= e.
       apply/eqP.
       apply/not_modifiedP.
       apply/negP.
@@ -455,11 +455,11 @@ destruct H_sp.
     move: Hs.
     by destruct H_sp.
   apply/mapP.
-  exists (v, run' v) => //.
+  exists (v, check' v) => //.
   rewrite mem_cat.
   apply/orP.
   left.
-  apply/run_impactedV'_certP.
+  apply/check_impactedV'_certP.
   split => //.
   split => //.
   apply/impactedV'P.
@@ -627,22 +627,22 @@ exists (foldr (fun x (p' : seq V) => if insub x is Some x' then x' :: p' else p'
   by apply IH; rewrite Heq.
 Qed.
 
-Lemma run_all_cert_sound :
-  forall (v : V') (r : R), (v,r) \in run_all_cert ->
-  runnable' v /\ run' v = r.
+Lemma check_all_cert_sound :
+  forall (v : V') (r : R), (v,r) \in check_all_cert ->
+  checkable' v /\ check' v = r.
 Proof.
 move => v r.
-move/run_all_cert_cases.
+move/check_all_cert_cases.
 case.
 - (* impacted case *)
   move => [Hi Hr].
-  move/run_impactedV'_cert_run: Hi => [Hi [Hi' Hi'']].
+  move/check_impactedV'_cert_check: Hi => [Hi [Hi' Hi'']].
   by move/eqP: Hi'.
 - (* unimpacted case *)
   move => [Hi Hr].
-  have Hc: runnable' v.
+  have Hc: checkable' v.
     move: Hi.
-    exact: V_result_filter_cert_runnable'.
+    exact: V_result_filter_cert_checkable'.
   split => //. 
   move/mapP: Hi.
   case; case => u b'.
@@ -700,8 +700,8 @@ case.
   rewrite -Hch.
   rewrite Hu'.
   apply sym_eq.
-  apply run_V_V' => //.
-  * rewrite -runnable_V_V' //.
+  apply check_V_V' => //.
+  * rewrite -checkable_V_V' //.
     apply/eqP.
     by apply: Hall'.
   * exact: connect_gV'_rev.
@@ -719,11 +719,11 @@ Variable P : pred V'.
 Local Notation V := (sig_finType P).
 Variable f' : V' -> A.
 Variable f : V -> A.
-Variable runnable' : pred V'.
-Variable runnable : pred V.
+Variable checkable' : pred V'.
+Variable checkable : pred V.
 Variable R : eqType.
-Variable run : V -> R.
-Variable run' : V' -> R.
+Variable check : V -> R.
+Variable check' : V' -> R.
 Variables (g1 : rel V) (g2 : rel V).
 Variable g' : rel V'.
 
@@ -734,50 +734,50 @@ Hypothesis g1_g2_connect : connect g1 =2 connect g2.
 Hypothesis f_equal_g1 :
   forall v, f v = f' (val v) -> forall v', g1V' (val v) v' = g' (val v) v'.
 
-Hypothesis runnable_V_V' :
-  forall v, f v = f' (val v) -> runnable v = runnable' (val v).
+Hypothesis checkable_V_V' :
+  forall v, f v = f' (val v) -> checkable v = checkable' (val v).
 
-Hypothesis run_V_V' :
-  forall v, runnable v -> runnable' (val v) ->
+Hypothesis check_V_V' :
+  forall v, checkable v -> checkable' (val v) ->
   (forall v', connect g1V' (val v) v' = connect g' (val v) v') ->
   (forall v', connect g1V' (val v) (val v') -> f v' = f' (val v')) ->
-  run v = run' (val v).
+  check v = check' (val v).
 
 Variable V_result_cert : seq (V * R).
 Hypothesis V_result_certP :
-  forall (v : V) (r : R), reflect (runnable v /\ run v = r) ((v,r) \in V_result_cert).
+  forall (v : V) (r : R), reflect (checkable v /\ check v = r) ((v,r) \in V_result_cert).
 Hypothesis V_result_cert_uniq : uniq [seq vr.1 | vr <- V_result_cert].
 
-Lemma run_all_cert_V'_uniq_g2 : uniq (run_all_cert_V' f' f g2 runnable' run' V_result_cert).
+Lemma check_all_cert_V'_uniq_g2 : uniq (check_all_cert_V' f' f g2 checkable' check' V_result_cert).
 Proof.
-rewrite /run_all_cert_V' /run_all_cert /run_impactedV'_cert /runnable_impacted_fresh.
-erewrite <- connect_runnable_impactedV'; eauto.
+rewrite /check_all_cert_V' /check_all_cert /check_impactedV'_cert /checkable_impacted_fresh.
+erewrite <- connect_checkable_impactedV'; eauto.
 rewrite /V'_result_filter_cert /impactedVV'.
 erewrite <- connect_impactedV_eq; eauto.
-exact: run_all_cert_V'_uniq.
+exact: check_all_cert_V'_uniq.
 Qed.
 
-Lemma run_all_cert_complete_g2 :
-  forall v, runnable' v -> v \in run_all_cert_V' f' f g2 runnable' run' V_result_cert.
+Lemma check_all_cert_complete_g2 :
+  forall v, checkable' v -> v \in check_all_cert_V' f' f g2 checkable' check' V_result_cert.
 Proof.
 move => v Hc.
-rewrite /run_all_cert_V' /run_all_cert /run_impactedV'_cert /runnable_impacted_fresh.
-erewrite <- connect_runnable_impactedV'; eauto.
+rewrite /check_all_cert_V' /check_all_cert /check_impactedV'_cert /checkable_impacted_fresh.
+erewrite <- connect_checkable_impactedV'; eauto.
 rewrite /V'_result_filter_cert /impactedVV'.
 erewrite <- connect_impactedV_eq; eauto.
-by apply: run_all_cert_complete; eauto.
+by apply: check_all_cert_complete; eauto.
 Qed.
 
-Lemma run_all_cert_sound_g2 :
-  forall (v : V') (r : R), (v,r) \in run_all_cert f' f g2 runnable' run' V_result_cert ->
-  runnable' v /\ run' v = r.
+Lemma check_all_cert_sound_g2 :
+  forall (v : V') (r : R), (v,r) \in check_all_cert f' f g2 checkable' check' V_result_cert ->
+  checkable' v /\ check' v = r.
 Proof.
 move => v r.
-rewrite /run_all_cert /run_impactedV'_cert /runnable_impacted_fresh.
-erewrite <- connect_runnable_impactedV'; eauto.
+rewrite /check_all_cert /check_impactedV'_cert /checkable_impacted_fresh.
+erewrite <- connect_checkable_impactedV'; eauto.
 rewrite /V'_result_filter_cert /impactedVV'.
 erewrite <- connect_impactedV_eq; eauto.
-by apply: run_all_cert_sound; eauto.
+by apply: check_all_cert_sound; eauto.
 Qed.
 
 End Other.

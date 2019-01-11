@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect acyclic closure run change.
+Require Import extra connect acyclic closure check change.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -30,11 +30,11 @@ Local Notation g_bot_rev := [rel x y | g_bot y x].
 
 Variable (f_top : U -> A_top) (f_bot : V -> A_bot).
 
-Variable (runnable : pred V').
+Variable (checkable : pred V').
 
 Variable (R : eqType).
 
-Variable (run : V' -> R).
+Variable (check : V' -> R).
 
 Variables (p : U -> {set V}) (p' : U' -> {set V'}).
 
@@ -441,19 +441,19 @@ case; move => [Ha Hb].
 - exact: pimpacted_V'_fresh.
 Qed.
 
-Definition runnable_pimpacted_V' :=
- [set v in pimpacted_V' | runnable v].
+Definition checkable_pimpacted_V' :=
+ [set v in pimpacted_V' | checkable v].
 
-Definition runnable_pimpacted_fresh : seq V' :=
- enum runnable_pimpacted_V'.
+Definition checkable_pimpacted_fresh : seq V' :=
+ enum checkable_pimpacted_V'.
 
-Definition run_pimpacted_V'_cert :=
- [seq (v, run v) | v <- runnable_pimpacted_fresh].
+Definition check_pimpacted_V'_cert :=
+ [seq (v, check v) | v <- checkable_pimpacted_fresh].
 
-Lemma run_pimpacted_V'_certP v r :
+Lemma check_pimpacted_V'_certP v r :
   reflect
-    (runnable v /\ run v == r /\ v \in pimpacted_V')
-    ((v,r) \in run_pimpacted_V'_cert).
+    (checkable v /\ check v == r /\ v \in pimpacted_V')
+    ((v,r) \in check_pimpacted_V'_cert).
 Proof.
 apply: (iffP idP).
 - move/mapP => [v' Hv'].
@@ -469,8 +469,8 @@ apply: (iffP idP).
   by apply/andP; split.
 Qed.
 
-Lemma run_pimpacted_V'_cert_uniq :
-  uniq [seq vr.1 | vr <- run_pimpacted_V'_cert].
+Lemma check_pimpacted_V'_cert_uniq :
+  uniq [seq vr.1 | vr <- check_pimpacted_V'_cert].
 Proof.
 rewrite map_inj_in_uniq.
 - rewrite map_inj_uniq; first by rewrite enum_uniq.

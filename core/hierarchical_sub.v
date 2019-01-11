@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect acyclic closure run change hierarchical.
+Require Import extra connect acyclic closure check change hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -30,11 +30,11 @@ Local Notation g_bot_rev := [rel x y | g_bot y x].
 
 Variable (f_top : U -> A_top) (f_bot : V -> A_bot).
 
-Variable (runnable : pred V').
+Variable (checkable : pred V').
 
 Variable (R : eqType).
 
-Variable (run : V' -> R).
+Variable (check : V' -> R).
 
 Variables (p : U -> {set V}) (p' : U' -> {set V'}).
 
@@ -221,13 +221,13 @@ Lemma impactedV'_sub_eq :
   impactedV'_sub = impactedV' f'_bot f_bot g_bot.
 Proof. by rewrite /impactedV'_sub impactedVV'_sub_eq. Qed.
 
-Definition runnable_impactedV'_sub :=
- [set v in impactedV'_sub | runnable v].
+Definition checkable_impactedV'_sub :=
+ [set v in impactedV'_sub | checkable v].
 
-Definition runnable_impacted_fresh_sub : seq V' :=
- enum runnable_impactedV'_sub.
+Definition checkable_impacted_fresh_sub : seq V' :=
+ enum checkable_impactedV'_sub.
 
-Definition run_impactedV'_sub_cert :=
- [seq (v, run v) | v <- runnable_impacted_fresh_sub].
+Definition check_impactedV'_sub_cert :=
+ [seq (v, check v) | v <- checkable_impacted_fresh_sub].
 
 End HierarchicalSub.

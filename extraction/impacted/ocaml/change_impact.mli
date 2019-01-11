@@ -1,4 +1,4 @@
-val runnable_impacted : int ->
+val checkable_impacted : int ->
   (int -> int list) ->
   (int -> string) ->
   (int -> string) ->
@@ -11,7 +11,7 @@ val impacted_fresh : int -> int ->
   (int -> string) ->
   int list
 
-val runnable_impacted_fresh : int -> int ->
+val checkable_impacted_fresh : int -> int ->
   (int -> int list) ->
   (int -> string) ->
   (int -> string) ->

@@ -6,17 +6,17 @@ let new_vertex_entry json =
   let id = to_int (member "id" json) in
   let uri = to_string (member "uri" json) in
   let adjacent = List.map to_int (to_list (member "neighbors" json)) in
-  let runnable = to_bool (member "checkable" json) in
+  let checkable = to_bool (member "checkable" json) in
   let checksum = to_string (member "checksum" json) in
-  (id, uri, adjacent, runnable, checksum)
+  (id, uri, adjacent, checkable, checksum)
 
 let old_vertex_entry json =
   let id = to_int (member "id" json) in
   let uri = to_string (member "uri" json) in
   let adjacent = List.map to_int (to_list (member "neighbors" json)) in
-  let runnable = to_bool (member "checkable" json) in
+  let checkable = to_bool (member "checkable" json) in
   let checksum = to_string (member "checksum" json) in
-  (id, uri, adjacent, runnable, checksum)
+  (id, uri, adjacent, checkable, checksum)
 
 let build_id_idx_tbl el =
   let tbl = Hashtbl.create (List.length el) in
@@ -41,10 +41,10 @@ let extend_id_idx_tbl tbl el =
 let build_old_idx_arr old_id_idx_tbl el =
   let arr = Array.make (List.length el) (0, [], false, "") in
   List.iter
-    (fun (id, uri, adjacent, runnable, checksum) ->
+    (fun (id, uri, adjacent, checkable, checksum) ->
       let idx = Hashtbl.find old_id_idx_tbl id in
       let al = List.map (Hashtbl.find old_id_idx_tbl) adjacent in
-      let elt = (id, al, runnable, checksum) in      
+      let elt = (id, al, checkable, checksum) in      
       arr.(idx) <- elt)    
     el;
   arr
@@ -52,10 +52,10 @@ let build_old_idx_arr old_id_idx_tbl el =
 let build_new_idx_arr new_id_idx_tbl el =
   let arr = Array.make (List.length el) (0, "", [], false, "") in
   List.iter
-    (fun (id, uri, adjacent, runnable, checksum) ->
+    (fun (id, uri, adjacent, checkable, checksum) ->
       let idx = Hashtbl.find new_id_idx_tbl id in
       let al = List.map (Hashtbl.find new_id_idx_tbl) adjacent in
-      arr.(idx) <- (id, uri, al, runnable, checksum))
+      arr.(idx) <- (id, uri, al, checkable, checksum))
     el;
   arr
 
@@ -100,7 +100,7 @@ let () =
   let successors k = succs_arr.(k) in
   let f_new k = let (_,_,_,_,checksum) = new_idx_arr.(k) in checksum in
   let f_old k = let (_,_,_,checksum) = old_idx_arr.(k) in checksum in
-  let rnb k = let (_,_,_,runnable,_) = new_idx_arr.(k) in runnable in
+  let rnb k = let (_,_,_,checkable,_) = new_idx_arr.(k) in checkable in
   let successors' k = succs'_arr.(k) in
 
   let tsorted =

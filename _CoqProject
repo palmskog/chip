@@ -18,11 +18,11 @@ core/kosaraju.v
 core/kosaraju_acyclic.v
 core/tarjan_acyclic.v
 core/change.v
-core/run.v
+core/check.v
 core/string.v
 core/finn.v
 core/finn_set.v
-core/run_seq.v
+core/check_seq.v
 core/topos.v
 core/ordtype.v
 core/dfs_set.v

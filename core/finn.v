@@ -4,7 +4,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import connect acyclic string kosaraju topos close_dfs run change run_seq.
+Require Import connect acyclic string kosaraju topos close_dfs check change check_seq.
 
 Section Finn.
 
@@ -27,23 +27,23 @@ Variable successors : V -> seq V.
 
 Variable f' : V' -> A.
 Variable f : V -> A.
-Variable runnable' : pred V'.
+Variable checkable' : pred V'.
 
 Definition succs_closure := @rclosure' V.
 Definition succs_closureP := rclosure'Pg.
 Definition succs_closure_uniq := rclosure'_uniq.
 
-Definition succs_runnable_impacted :=
- seq_runnable_impacted f' f successors runnable' succs_closure.
+Definition succs_checkable_impacted :=
+ seq_checkable_impacted f' f successors checkable' succs_closure.
 Definition succs_impacted_fresh :=
  seq_impacted_fresh f' f successors succs_closure.
-Definition succs_runnable_impacted_fresh :=
- seq_runnable_impacted_fresh f' f successors runnable' succs_closure.
+Definition succs_checkable_impacted_fresh :=
+ seq_checkable_impacted_fresh f' f successors checkable' succs_closure.
 
 Variable successors' : V' -> seq V'.
 
 Definition succs_ts :=
- ts_g'rev_imf_runnable_val f' f successors runnable' succs_closure tseq successors'.
+ ts_g'rev_imf_checkable_val f' f successors checkable' succs_closure tseq successors'.
 
 Variable (g : rel V).
 
@@ -60,10 +60,10 @@ apply: seq_impacted_fresh_eq; eauto.
 exact: succs_closureP.
 Qed.
 
-Lemma succs_runnable_impacted_fresh_eq :
- runnable_impactedV' f' f g runnable' =i succs_runnable_impacted_fresh.
+Lemma succs_checkable_impacted_fresh_eq :
+ checkable_impactedV' f' f g checkable' =i succs_checkable_impacted_fresh.
 Proof.
-apply: seq_runnable_impacted_fresh_eq; eauto.
+apply: seq_checkable_impacted_fresh_eq; eauto.
 exact: succs_closureP.
 Qed.
 
@@ -75,10 +75,10 @@ apply: seq_impacted_fresh_uniq => //.
   exact: succs_closure_uniq.
 Qed.
 
-Lemma succs_runnable_impacted_fresh_uniq :
-  uniq succs_runnable_impacted_fresh.
+Lemma succs_checkable_impacted_fresh_uniq :
+  uniq succs_checkable_impacted_fresh.
 Proof.
-apply: seq_runnable_impacted_fresh_uniq => //.
+apply: seq_checkable_impacted_fresh_uniq => //.
 - exact: succs_closureP.
 - move => s Hs.
   exact: succs_closure_uniq.
@@ -87,23 +87,23 @@ Qed.
 Lemma succs_ts_uniq :
   uniq succs_ts.
 Proof.
-apply: ts_g'rev_imf_runnable_val_uniq.
+apply: ts_g'rev_imf_checkable_val_uniq.
 exact: tseq_uniq.
 Qed.
 
 Lemma in_succs_ts :
   forall x, x \in succs_ts ->
-  runnable' x /\ x \in impactedV' f' f g.
+  checkable' x /\ x \in impactedV' f' f g.
 Proof.
-apply: in_ts_g'rev_imf_runnable_val; eauto.
+apply: in_ts_g'rev_imf_checkable_val; eauto.
 exact: succs_closureP.
 Qed.
 
 Lemma succs_ts_in :
-  forall x, runnable' x -> x \in impactedV' f' f g ->
+  forall x, checkable' x -> x \in impactedV' f' f g ->
   x \in succs_ts.
 Proof.
-apply: ts_g'rev_imf_runnable_val_in; eauto.
+apply: ts_g'rev_imf_checkable_val_in; eauto.
 - exact: succs_closureP.
 - exact: tseq_all.
 Qed.
@@ -116,12 +116,12 @@ Hypothesis f_equal_g :
   forall v, f v = f' (val v) -> forall v', gV' (val v) v' = g' (val v) v'.
 
 Lemma succs_tseq_before : forall x y,
-  x \in impactedV' f' f g -> runnable' x ->
-  y \in impactedV' f' f g -> runnable' y ->
+  x \in impactedV' f' f g -> checkable' x ->
+  y \in impactedV' f' f g -> checkable' y ->
   connect g' x y ->
   before succs_ts y x.
 Proof.
-apply: ts_g'rev_imf_runnable_val_before; eauto.
+apply: ts_g'rev_imf_checkable_val_before; eauto.
 - exact: succs_closureP.
 - exact: tseq_sorted.
 - exact: tseq_all.

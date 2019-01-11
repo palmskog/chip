@@ -37,11 +37,11 @@ Variable f : V -> A.
 
 Variable g : rel V.
 
-Variable runnable : pred V'.
+Variable checkable : pred V'.
 
 Variable R : eqType.
 
-Variable run : V' -> R.
+Variable check : V' -> R.
 
 Definition freshV' : {set V'} := [set v | ~~ P v].
 
@@ -99,11 +99,11 @@ apply: (iffP idP).
   by apply/negP/negP.
 Qed.
 
-Definition runnable_impactedV modified :=
-  [set v in impacted g^-1 modified | runnable (val v)].
+Definition checkable_impactedV modified :=
+  [set v in impacted g^-1 modified | checkable (val v)].
 
-Definition runnable_impacted :=
-  [seq (val v) | v <- enum (runnable_impactedV modifiedV)].
+Definition checkable_impacted :=
+  [seq (val v) | v <- enum (checkable_impactedV modifiedV)].
 
 Lemma impactedVP (modified : {set V}) x :
   reflect
@@ -203,18 +203,18 @@ apply: (iffP idP).
     by right.
 Qed.
 
-Definition runnable_impactedV' :=
- [set v in impactedV' | runnable v].
+Definition checkable_impactedV' :=
+ [set v in impactedV' | checkable v].
 
-Definition runnable_impacted_fresh : seq V' :=
- enum runnable_impactedV'.
+Definition checkable_impacted_fresh : seq V' :=
+ enum checkable_impactedV'.
 
-Definition run_impactedV'_cert :=
-  [seq (v, run v) | v <- runnable_impacted_fresh].
+Definition check_impactedV'_cert :=
+  [seq (v, check v) | v <- checkable_impacted_fresh].
 
-Lemma run_impactedV'_cert_run v r :
-  (v,r) \in run_impactedV'_cert -> 
-  runnable v /\ run v == r /\ v \in impactedV'.
+Lemma check_impactedV'_cert_check v r :
+  (v,r) \in check_impactedV'_cert -> 
+  checkable v /\ check v == r /\ v \in impactedV'.
 Proof.
 move/mapP => [v' Hv] Hc.
 move: Hc Hv.
@@ -224,11 +224,11 @@ move/andP => [Hc Hv].
 by split.
 Qed.
 
-Lemma cert_run_impactedV'_run v r :
-  runnable v ->
-  run v == r ->
+Lemma cert_check_impactedV'_check v r :
+  checkable v ->
+  check v == r ->
   v \in impactedV' ->
-  (v,r) \in run_impactedV'_cert.
+  (v,r) \in check_impactedV'_cert.
 Proof.
 move => Hc Hv Hi.
 apply/mapP.
@@ -238,19 +238,19 @@ apply/andP.
 by split.
 Qed.
 
-Lemma run_impactedV'_certP v r :
+Lemma check_impactedV'_certP v r :
   reflect
-    (runnable v /\ run v == r /\ v \in impactedV')
-    ((v,r) \in run_impactedV'_cert).
+    (checkable v /\ check v == r /\ v \in impactedV')
+    ((v,r) \in check_impactedV'_cert).
 Proof.
 apply: (iffP idP).
-- exact: run_impactedV'_cert_run.
+- exact: check_impactedV'_cert_check.
 - move => [Hc [Hv Hi]].
-  exact: cert_run_impactedV'_run.
+  exact: cert_check_impactedV'_check.
 Qed.
 
-Lemma run_impactedV'_cert_uniq :
-  uniq [seq vr.1 | vr <- run_impactedV'_cert].
+Lemma check_impactedV'_cert_uniq :
+  uniq [seq vr.1 | vr <- check_impactedV'_cert].
 Proof.
 rewrite map_inj_in_uniq.
 - rewrite map_inj_uniq; first by rewrite enum_uniq.
@@ -279,9 +279,9 @@ Variable P : pred V'.
 Local Notation V := (sig_finType P).
 Variable f : V -> A.
 Variables (g1 : rel V) (g2 : rel V).
-Variable runnable : pred V'.
+Variable checkable : pred V'.
 Variable R : eqType.
-Variable run : V' -> R.
+Variable check : V' -> R.
 
 Hypothesis g1_g2_connect : connect g1 =2 connect g2.
 
@@ -335,8 +335,8 @@ split.
   by rewrite connect_impactedV_eq.
 Qed.
 
-Lemma connect_runnable_impactedV' :
-  runnable_impactedV' f' f g1 runnable = runnable_impactedV' f' f g2 runnable.
+Lemma connect_checkable_impactedV' :
+  checkable_impactedV' f' f g1 checkable = checkable_impactedV' f' f g2 checkable.
 Proof.
 apply/eqP.
 rewrite eqEsubset.

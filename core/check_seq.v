@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect run change acyclic kosaraju topos.
+Require Import extra connect check change acyclic kosaraju topos.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -24,7 +24,7 @@ Variable (f : V -> A).
 
 Variable grev : V -> seq V.
 
-Variable runnable' : pred V'.
+Variable checkable' : pred V'.
 
 Variable clos : (V -> seq V) -> seq V -> seq V.
 
@@ -51,9 +51,9 @@ Definition seq_impactedV := clos grev seq_modifiedV.
 Definition seq_impactedV' := [seq (val v) | v <- seq_impactedV].
 Definition seq_freshV' := [seq v <- enum V' | ~~ P v].
 
-Definition seq_runnable_impacted := [seq v <- seq_impactedV' | runnable' v].
+Definition seq_checkable_impacted := [seq v <- seq_impactedV' | checkable' v].
 Definition seq_impacted_fresh := seq_impactedV' ++ seq_freshV'.
-Definition seq_runnable_impacted_fresh := [seq v <- seq_impacted_fresh | runnable' v].
+Definition seq_checkable_impacted_fresh := [seq v <- seq_impacted_fresh | checkable' v].
 
 Variable g : rel V.
 
@@ -176,8 +176,8 @@ case: ifP.
     by rewrite -seq_freshV'_eq.
 Qed.
 
-Lemma seq_runnable_impacted_fresh_eq :
- runnable_impactedV' f' f g runnable' =i seq_runnable_impacted_fresh.
+Lemma seq_checkable_impacted_fresh_eq :
+ checkable_impactedV' f' f g checkable' =i seq_checkable_impacted_fresh.
 Proof.
 move => x.
 rewrite inE.
@@ -209,7 +209,7 @@ apply/andP; split.
   by apply impactedVV'_freshV'.
 Qed.
 
-Lemma seq_runnable_impacted_fresh_uniq : uniq seq_runnable_impacted_fresh.
+Lemma seq_checkable_impacted_fresh_uniq : uniq seq_checkable_impacted_fresh.
 Proof.
 rewrite filter_uniq //.
 exact: seq_impacted_fresh_uniq.
@@ -266,50 +266,50 @@ apply: ts_connect_before; eauto.
   by rewrite -g'_g'rev.
 Qed.
 
-Definition ts_g'rev_runnable_imf :=
- [seq x <- ts_g'rev | x \in seq_runnable_impacted_fresh].
+Definition ts_g'rev_checkable_imf :=
+ [seq x <- ts_g'rev | x \in seq_checkable_impacted_fresh].
 
-Lemma ts_g'rev_runnable_imf_uniq : uniq ts_g'rev_runnable_imf.
+Lemma ts_g'rev_checkable_imf_uniq : uniq ts_g'rev_checkable_imf.
 Proof.
 apply: filter_uniq.
 exact: ts_uniq.
 Qed.
 
-Lemma in_ts_g'rev_runnable_imf :
-  forall x, x \in ts_g'rev_runnable_imf ->
-  runnable' x /\ x \in impactedV' f' f g.
+Lemma in_ts_g'rev_checkable_imf :
+  forall x, x \in ts_g'rev_checkable_imf ->
+  checkable' x /\ x \in impactedV' f' f g.
 Proof.
 move => x.
 rewrite mem_filter.
 move/andP => [Hs Hx].
 move: Hs.
-rewrite -seq_runnable_impacted_fresh_eq inE.
+rewrite -seq_checkable_impacted_fresh_eq inE.
 by move/andP => [Hss Hxx].
 Qed.
 
-Lemma ts_g'rev_runnable_imf_in :
-  forall x, runnable' x -> x \in impactedV' f' f g ->
-  x \in ts_g'rev_runnable_imf.
+Lemma ts_g'rev_checkable_imf_in :
+  forall x, checkable' x -> x \in impactedV' f' f g ->
+  x \in ts_g'rev_checkable_imf.
 Proof.
 move => x Hc Hx.
 rewrite mem_filter.
 apply/andP.
 split; last by apply ts_all.
-rewrite -seq_runnable_impacted_fresh_eq inE.
+rewrite -seq_checkable_impacted_fresh_eq inE.
 by apply/andP; split.
 Qed.
 
-Lemma ts_g'rev_runnable_imf_before : forall x y,
+Lemma ts_g'rev_checkable_imf_before : forall x y,
   y \in impactedV' f' f g ->
-  runnable' y ->
+  checkable' y ->
   connect g' x y ->
-  before ts_g'rev_runnable_imf y x.
+  before ts_g'rev_checkable_imf y x.
 Proof.
 move => x y Hc Hy Hc'.
 apply: before_filter; last by apply: ts_rev_before.
 rewrite mem_filter.
 apply/andP; split => //.
-rewrite -seq_runnable_impacted_fresh_eq inE; first by apply/andP; split.
+rewrite -seq_checkable_impacted_fresh_eq inE; first by apply/andP; split.
 exact: ts_all.
 Qed.
 
@@ -434,13 +434,13 @@ apply: ts_connect_before; eauto.
   by case: x' {IH' Hx Hs}.
 Qed.
 
-Definition ts_g'rev_imf_runnable :=
- [seq x <- ts_g'rev_imf | runnable' (val x)].
+Definition ts_g'rev_imf_checkable :=
+ [seq x <- ts_g'rev_imf | checkable' (val x)].
 
-Lemma ts_g'rev_imf_runnable_before : forall x y,
-  runnable' (val y) ->
+Lemma ts_g'rev_imf_checkable_before : forall x y,
+  checkable' (val y) ->
   connect g'_imf x y ->
-  before ts_g'rev_imf_runnable y x.
+  before ts_g'rev_imf_checkable y x.
 Proof.
 move => x y Hy Hc.
 apply: before_filter; last by apply: ts_g'rev_imf_before.
@@ -449,20 +449,20 @@ apply/andP.
 by split; last by apply: ts_g'rev_imf_all.
 Qed.
 
-Definition ts_g'rev_imf_runnable_val :=
- [seq (val x) | x <- ts_g'rev_imf_runnable].
+Definition ts_g'rev_imf_checkable_val :=
+ [seq (val x) | x <- ts_g'rev_imf_checkable].
 
-Lemma ts_g'rev_imf_runnable_val_uniq :
-  uniq ts_g'rev_imf_runnable_val.
+Lemma ts_g'rev_imf_checkable_val_uniq :
+  uniq ts_g'rev_imf_checkable_val.
 Proof.
 rewrite map_inj_uniq; last by apply val_inj.
 apply: filter_uniq.
 exact: ts_g'rev_imf_uniq.
 Qed.
 
-Lemma in_ts_g'rev_imf_runnable_val :
-  forall x, x \in ts_g'rev_imf_runnable_val ->
-  runnable' x /\ x \in impactedV' f' f g.
+Lemma in_ts_g'rev_imf_checkable_val :
+  forall x, x \in ts_g'rev_imf_checkable_val ->
+  checkable' x /\ x \in impactedV' f' f g.
 Proof.
 move => x.
 move/mapP => [x' Hx'] Hx.
@@ -474,9 +474,9 @@ move: Hxt.
 by case: x' Hx Hxc.
 Qed.
 
-Lemma ts_g'rev_imf_runnable_val_in :
-  forall x, runnable' x -> x \in impactedV' f' f g ->
-  x \in ts_g'rev_imf_runnable_val.
+Lemma ts_g'rev_imf_checkable_val_in :
+  forall x, checkable' x -> x \in impactedV' f' f g ->
+  x \in ts_g'rev_imf_checkable_val.
 Proof.
 move => x Hc.
 rewrite seq_impacted_fresh_eq => Hx.
@@ -698,11 +698,11 @@ exists (pmap insub p); last first.
   by apply/orP; right.
 Qed.
 
-Lemma ts_g'rev_imf_runnable_val_before : forall x y,
-  x \in impactedV' f' f g -> runnable' x ->
-  y \in impactedV' f' f g -> runnable' y ->
+Lemma ts_g'rev_imf_checkable_val_before : forall x y,
+  x \in impactedV' f' f g -> checkable' x ->
+  y \in impactedV' f' f g -> checkable' y ->
   connect g' x y ->
-  before ts_g'rev_imf_runnable_val y x.
+  before ts_g'rev_imf_checkable_val y x.
 Proof.
 move => x y Hx Hxc Hy Hyc Hc.
 have H_sp := (insubP [subType of V'_imf] x).
@@ -718,8 +718,8 @@ destruct H_sp'; last first.
 have Hc': connect g' (val u) (val u0).
   by rewrite e e0.
 apply connect_g'_imf in Hc'.
-have Hyc': runnable' (val u0) by rewrite e0.
-have Ht := ts_g'rev_imf_runnable_before Hyc' Hc'.
+have Hyc': checkable' (val u0) by rewrite e0.
+have Ht := ts_g'rev_imf_checkable_before Hyc' Hc'.
 rewrite /before /index.
 rewrite 2!find_map /=.
 rewrite /preim /=.

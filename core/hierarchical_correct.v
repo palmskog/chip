@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect acyclic closure run change hierarchical.
+Require Import extra connect acyclic closure check change hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -36,11 +36,11 @@ Local Notation g_top_rev := [rel x y | g_top y x].
 
 Local Notation g_bot_rev := [rel x y | g_bot y x].
 
-Variables (runnable' : pred V') (runnable : pred V).
+Variables (checkable' : pred V') (checkable : pred V).
 
 Variable R : eqType.
 
-Variables (run : V -> R) (run' : V' -> R).
+Variables (check : V -> R) (check' : V' -> R).
 
 Variables (p : U -> {set V}) (p' : U' -> {set V'}).
 
@@ -79,33 +79,33 @@ Hypothesis f_top_equal_g_top :
 Hypothesis f_bot_equal_g_bot :
   forall v, f_bot v = f'_bot (val v) -> forall v', g_bot_V' (val v) v' = g'_bot (val v) v'.
 
-Hypothesis runnable_bot :
-  forall v, f_bot v = f'_bot (val v) -> runnable v = runnable' (val v).
+Hypothesis checkable_bot :
+  forall v, f_bot v = f'_bot (val v) -> checkable v = checkable' (val v).
 
-Hypothesis run_bot :
-  forall v, runnable v -> runnable' (val v) ->
+Hypothesis check_bot :
+  forall v, checkable v -> checkable' (val v) ->
   (forall v', connect g_bot_V' (val v) v' = connect g'_bot (val v) v') ->
   (forall v', connect g_bot_V' (val v) (val v') -> f_bot v' = f'_bot (val v')) ->
-  run v = run' (val v).
+  check v = check' (val v).
 
 Variable V_result_cert : seq (V * R).
 
 Hypothesis V_result_certP :
-  forall v r, reflect (runnable v /\ run v = r) ((v,r) \in V_result_cert).
+  forall v r, reflect (checkable v /\ check v = r) ((v,r) \in V_result_cert).
 
 Hypothesis V_result_cert_uniq : uniq [seq vr.1 | vr <- V_result_cert].
 
 Definition V'_result_filter_cert_p :=
   [seq (val vr.1, vr.2) | vr <- V_result_cert & val vr.1 \notin pimpacted_V' f'_top g_top f_top p'].
 
-Definition run_all_cert_p :=
- run_pimpacted_V'_cert f'_top g_top f_top runnable' run' p' ++ V'_result_filter_cert_p.
+Definition check_all_cert_p :=
+ check_pimpacted_V'_cert f'_top g_top f_top checkable' check' p' ++ V'_result_filter_cert_p.
 
-Definition run_all_cert_V'_p :=
- [seq vr.1 | vr <- run_all_cert_p].
+Definition check_all_cert_V'_p :=
+ [seq vr.1 | vr <- check_all_cert_p].
 
-Lemma run_all_cert_complete_p :
-  forall (v : V'), runnable' v -> v \in run_all_cert_V'_p.
+Lemma check_all_cert_complete_p :
+  forall (v : V'), checkable' v -> v \in check_all_cert_V'_p.
 Proof.
 move => v Hc.
 have H_sp := (insubP [subType of V] v).
@@ -120,23 +120,23 @@ destruct H_sp.
   apply/mapP.
   case Hv': (v \in pimpacted_V' f'_top g_top f_top p').
   * move/idP: Hv'.
-    exists (v, run' v); last by [].
+    exists (v, check' v); last by [].
     rewrite mem_cat.
     apply/orP.
     left.
-    by apply/run_pimpacted_V'_certP.
+    by apply/check_pimpacted_V'_certP.
   * move/negP/negP: Hv'.
-    exists (v, run u); last by [].
+    exists (v, check u); last by [].
     rewrite mem_cat.
     apply/orP.
     right.
     apply/mapP.
-    exists (u, run u); last by rewrite /= e.
+    exists (u, check u); last by rewrite /= e.
     rewrite mem_filter.
     apply/andP; split; first by rewrite e.
     apply/V_result_certP.
     split => //.
-    suff H_suff: f_bot u = f'_bot (val u) by rewrite runnable_bot //= e.
+    suff H_suff: f_bot u = f'_bot (val u) by rewrite checkable_bot //= e.
       apply/eqP.
       apply/not_modifiedP.
       apply/negP.
@@ -160,19 +160,19 @@ destruct H_sp.
     move: Hs.
     by destruct H_sp.
   apply/mapP.
-  exists (v, run' v) => //.
+  exists (v, check' v) => //.
   rewrite mem_cat.
   apply/orP.
   left.
-  apply/run_pimpacted_V'_certP.
+  apply/check_pimpacted_V'_certP.
   split => //; split => //.
   move: Hv.
   by apply: pimpacted_V'_fresh; eauto.
 Qed.
 
-Lemma run_all_cert_sound_p :
-  forall (v : V') (r : R), (v,r) \in run_all_cert_p ->
-  runnable' v /\ run' v = r.
+Lemma check_all_cert_sound_p :
+  forall (v : V') (r : R), (v,r) \in check_all_cert_p ->
+  checkable' v /\ check' v = r.
 Proof.
 move => v r.
 rewrite mem_cat.
@@ -199,7 +199,7 @@ move/orP; case.
     move/negP: Hp.
     case.
     by apply: pimpacted_V'_fresh; eauto.
-  apply: run_all_cert_sound; eauto.
+  apply: check_all_cert_sound; eauto.
   rewrite mem_cat.
   apply/orP.
   right.
@@ -214,13 +214,13 @@ move/orP; case.
   by left.
 Qed.
 
-Lemma run_all_cert_V'_uniq_p : uniq run_all_cert_V'_p.
+Lemma check_all_cert_V'_uniq_p : uniq check_all_cert_V'_p.
 Proof.
 rewrite map_inj_in_uniq.
 - rewrite cat_uniq.
   apply/andP.
   split; last (apply/andP; split).
-  * have Hu := run_pimpacted_V'_cert_uniq f'_top g_top f_top runnable' run' p'.
+  * have Hu := check_pimpacted_V'_cert_uniq f'_top g_top f_top checkable' check' p'.
     move: Hu.
     exact: map_uniq.
   * apply/negP.
