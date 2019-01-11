@@ -1,5 +1,4 @@
-IMPACTEDML = extraction/impacted/ocaml/impacted.ml extraction/impacted/ocaml/impacted.mli
-IMPACTEDRBTML = extraction/impacted-rbt/ocaml/impacted_rbt.ml extraction/impacted-rbt/ocaml/impacted_rbt.mli
+include Makefile.ml-files
 
 all: default
 
@@ -25,13 +24,7 @@ impacted-rbt:
 	+$(MAKE) -C extraction/impacted-rbt filtering.native filteringinv.native topfiltering.native
 
 Makefile.coq: _CoqProject
-	coq_makefile -f _CoqProject -o Makefile.coq \
-	  -extra '$(IMPACTEDML)' \
-	    'extraction/impacted/coq/extract_impacted.v core/finn.vo' \
-	    '$$(COQC) $$(COQDEBUG) $$(COQFLAGS) extraction/impacted/coq/extract_impacted.v' \
-	  -extra '$(IMPACTEDRBTML)' \
-	    'extraction/impacted-rbt/coq/extract_impacted_rbt.v core/finn_set.vo' \
-	    '$$(COQC) $$(COQDEBUG) $$(COQFLAGS) extraction/impacted-rbt/coq/extract_impacted_rbt.v'
+	coq_makefile -f _CoqProject -o Makefile.coq
 
 $(IMPACTEDML) $(IMPACTEDRBTML): Makefile.coq
 	$(MAKE) -f Makefile.coq $@

@@ -1,0 +1,10 @@
+include Makefile.ml-files
+
+$(IMPACTEDML): extraction/impacted/coq/extract_impacted.v core/finn.vo
+	$(COQC) $(COQDEBUG) $(COQFLAGS) $(COQLIBS) extraction/impacted/coq/extract_impacted.v
+
+$(IMPACTEDRBTML): extraction/impacted-rbt/coq/extract_impacted_rbt.v core/finn_set.vo
+	$(COQC) $(COQDEBUG) $(COQFLAGS) $(COQLIBS) extraction/impacted-rbt/coq/extract_impacted_rbt.v
+
+clean::
+	rm -f $(IMPACTEDML) $(IMPACTEDRBTML)
