@@ -1,7 +1,13 @@
 -Q core chip
 -Q extraction/impacted/coq chip
 -Q extraction/impacted-rbt/coq chip
--arg "-w -notation-overridden,-local-declaration,-redundant-canonical-projection,-projection-no-head-constant"
+
+-arg -w -arg -notation-overridden
+-arg -w -arg -local-declaration
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -projection-no-head-constant
+-arg -w -arg -extraction-opaque-accessed
+
 core/extra.v
 core/connect.v
 core/acyclic.v
