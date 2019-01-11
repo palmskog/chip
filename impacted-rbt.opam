@@ -1,0 +1,26 @@
+opam-version: "1.2"
+version: "dev"
+maintainer: "palmskog@gmail.com"
+
+homepage: "https://github.com/palmskog/chip"
+dev-repo: "https://github.com/palmskog/chip.git"
+bug-reports: "https://github.com/palmskog/chip/issues"
+license: "MIT"
+
+build: [ make "-j%{jobs}%" "impacted-rbt" ]
+depends: [
+  "coq" {>= "8.8" & < "8.10~"}
+  "mathcomp-ssreflect" {>= "1.7.0" & < "1.8"}
+  "ocamlbuild" {build}
+  "yojson"  {>= "1.4.1"}
+  "extlib" {>= "1.7.5"}
+]
+
+tags: [
+  "category:Computer Science/Decision Procedures and Certified Algorithms/Correctness proofs of algorithms"
+  "keyword:change impact analysis"
+  "keyword:graph theory"
+]
+authors: [
+  "Karl Palmskog <>"
+]
