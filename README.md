@@ -1,21 +1,28 @@
 Change Impact Analysis in Coq and OCaml
 =======================================
 
-Requirements:
+Requirements
+------------
+
+Definitions and proofs:
+
 - Coq 8.8 or later
-- MathComp 1.7.0 or later (`ssreflect` and `fingroup`)
+- MathComp 1.7.0 or later (`ssreflect` and `fingroup` suffice)
+
+Executable tool:
+
 - OCaml 4.05.0 or later
 - Ocamlbuild
 - yojson
 - extlib
 
-Building the Coq development
-----------------------------
+Checking the definitions and proofs
+-----------------------------------
 
 We recommend installing the requirements via [OPAM](http://opam.ocaml.org/doc/Install.html):
 ```
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-mathcomp-ssreflect coq-mathcomp-fingroup ocamlbuild yojson extlib
+opam install coq-mathcomp-ssreflect coq-mathcomp-fingroup
 ```
 
 Then run:
@@ -24,19 +31,24 @@ make
 ```
 This will build the whole project and check all the proofs.
 
-Building the Chip tool
-----------------------
+Building the tool
+-----------------
 
-To build regular Chip, run
+First install the Coq requirements as above, then install the OCaml requirements:
+```
+opam install ocamlbuild yojson extlib
+```
+
+Then, to build the regular tool, run
 ```
 make impacted
 ```
-To then try the tool, go to `extraction/impacted` and run:
+To try the tool, go to `extraction/impacted` and run:
 ```
 ./filtering.native test/new.json test/old.json
 ```
 
-To build Chip with red-black trees, run:
+To build the tool with red-black trees, run:
 ```
 make impacted-rbt
 ```
