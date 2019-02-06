@@ -1,5 +1,7 @@
-Change Impact Analysis in Coq and OCaml
-=======================================
+Chip
+====
+
+Change impact analysis in Coq and OCaml.
 
 Requirements
 ------------
