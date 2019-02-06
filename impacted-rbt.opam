@@ -10,18 +10,13 @@ license: "MIT"
 build: [ make "-j%{jobs}%" "impacted-rbt" ]
 depends: [
   "coq" {>= "8.8" & < "8.10~"}
-  "coq-mathcomp-ssreflect" {>= "1.7.0" & < "1.8"}
+  "coq-mathcomp-ssreflect" {>= "1.7" & < "1.8"}
   "coq-mathcomp-fingroup"
   "ocamlbuild" {build}
   "yojson"  {>= "1.4.1"}
   "extlib" {>= "1.7.5"}
 ]
 
-tags: [
-  "category:Computer Science/Decision Procedures and Certified Algorithms/Correctness proofs of algorithms"
-  "keyword:change impact analysis"
-  "keyword:graph theory"
-]
 authors: [
-  "Karl Palmskog <>"
+  "Karl Palmskog <palmskog@gmail.com>"
 ]

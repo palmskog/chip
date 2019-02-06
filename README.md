@@ -6,15 +6,15 @@ Requirements
 
 Definitions and proofs:
 
-- Coq 8.8 or later
-- MathComp 1.7.0 or later (`ssreflect` and `fingroup` suffice)
+- [Coq 8.8 or 8.9](http://coq.inria.fr)
+- [MathComp 1.7.0](https://math-comp.github.io/math-comp/) (`ssreflect` and `fingroup` suffice)
 
 Executable tool:
 
-- OCaml 4.05.0 or later
-- Ocamlbuild
-- yojson
-- extlib
+- [OCaml 4.05.0 or later](https://ocaml.org)
+- [Ocamlbuild](https://github.com/ocaml/ocamlbuild)
+- [yojson](https://github.com/ocaml-community/yojson)
+- [extlib](https://github.com/ygrek/ocaml-extlib)
 
 Checking the definitions and proofs
 -----------------------------------
