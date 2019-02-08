@@ -1,0 +1,57 @@
+{
+    "top": [
+	{ "uri": "file:/home/user/projects/chip/examples/simple/target/classes/p/A.class",
+	  "id": 4198844360,
+	  "checkable": false,
+	  "neighbors": [3873306685],
+	  "contents": [494533250, 306630295],
+	  "checksum": "10ba792368d81930027e872c2ad9a39f"
+	},
+	{ "uri": "file:/home/user/projects/chip/examples/simple/target/classes/p/C.class",
+	  "id": 3873306685,
+	  "checkable": false,
+	  "neighbors": [],
+	  "contents": [1517964775],
+	  "checksum": "3716b60b40157042bf3c6e18b0f98913"
+	},
+	{ "uri": "file:/home/user/projects/chip/examples/simple/target/test-classes/p/ATest.class",
+	  "id": 1571199077,
+	  "checkable": true,
+	  "neighbors": [4198844360],
+	  "contents": [416375022, 176021176],
+	  "checksum": "010bb09272ec602c7c77f365cfedf9dd",
+	}
+    ],
+    "bot": [
+	{ "uri": "method:p/A/m1(V)V",
+	  "id": 494533250,
+	  "checkable": false,
+	  "neighbors": [],
+	  "checksum": "a0c38209983ca54853643060bf84a8c1"
+	},
+	{ "uri": "method:p/A/m2(V)V",
+	  "id": 306630295,
+	  "checkable": false,
+	  "neighbors": [1517964775],
+	  "checksum": "402552e343aa10e7dfa353b5dc05cbfb"
+	},
+	{ "uri": "method:p/C/m(V)V",
+	  "id": 1517964775,
+	  "checkable": false,
+	  "neighbors": [],
+	  "checksum": "851a9f39e3b31c10bbb6d6051b02b74a"
+	},
+	{ "uri": "method:p/ATest/test1(V)V",
+	  "id": 416375022,
+	  "checkable": true,
+	  "neighbors": [494533250],
+	  "checksum": "effa19f517be69630609263dad9b0074"
+	},
+	{ "uri": "method:p/ATest/test2(V)V",
+	  "id": 176021176,
+	  "checkable": true,
+	  "neighbors": [306630295],
+	  "checksum": "e48504b27ed09ecb03b9068dfe34871f"
+	}
+    ]
+}
