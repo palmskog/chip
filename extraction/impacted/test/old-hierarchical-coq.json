@@ -1,0 +1,62 @@
+{
+    "top": [
+	{ "uri": "/home/user/projects/chip/examples/st/Dedup.v",
+	  "id": 2758678171,
+	  "checkable": true,
+	  "neighbors": [3955365859],
+	  "contents": [2433485337,591398152,2138507738],
+	  "checksum": "9ffbce4b"
+	},
+	{ "uri": "/home/user/projects/chip/st/ListUtil.v",
+	  "id": 3955365859,
+	  "checkable": true,
+	  "neighbors": [],
+	  "contents": [3345550460,2461010471,3728870587,2163935719],
+	  "checksum": "60e8a717"
+	}
+    ],
+    "bot": [
+	{ "uri": "ST.ListUtil.remove_preserve#type",
+	  "id": 3345550460,
+	  "checkable": false,
+	  "neighbors": [],
+	  "checksum": "69c406b0"
+	},
+	{ "uri": "ST.Dedup.remove_dedup#type",
+	  "id": 2138507738,
+	  "checkable": false,
+	  "neighbors": [591398152],
+	  "checksum": "69ad06ac"
+	},
+	{ "uri": "ST.Dedup.dedup",
+	  "id": 591398152,
+	  "checkable": false,
+	  "neighbors": [],
+	  "checksum": "6a3206c51d6103c5"
+	},
+	{ "uri": "ST.Dedup.remove_dedup#body",
+	  "id": 2433485337,
+	  "checkable": true,
+	  "neighbors": [3345550460,591398152,2163935719,2138507738],
+	  "checksum": "dd804e41"
+	},
+	{ "uri": "ST.ListUtil.in_remove#type",
+	  "id": 2163935719,
+	  "checkable": false,
+	  "neighbors": [],
+	  "checksum": "6a7806de"
+	},
+	{ "uri": "ST.ListUtil.in_remove#body",
+	  "id": 2461010471,
+	  "checkable": true,
+	  "neighbors": [2163935719],
+	  "checksum": "30251b5b"
+	},
+	{ "uri": "ST.ListUtil.remove_preserve#body",
+	  "id": 3728870587,
+	  "checkable": true,
+	  "neighbors": [3345550460],
+	  "checksum": "9e602d3e"
+	}
+    ]
+}

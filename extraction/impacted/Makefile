@@ -18,6 +18,10 @@ filteringinv.native: $(IMPACTED) $(CHANGE) ocaml/filteringinv.ml
 	perl scripts/remove_module.pl ocaml/impacted
 	$(OCAMLBUILD_JSON) filteringinv.native
 
+hierarchical.native: $(IMPACTED) $(CHANGE) ocaml/hierarchical.ml
+	perl scripts/remove_module.pl ocaml/impacted
+	$(OCAMLBUILD_JSON) hierarchical.native
+
 $(IMPACTED):
 	+$(MAKE) -C ../.. extraction/impacted/$@
 

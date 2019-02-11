@@ -1,0 +1,51 @@
+{
+    "top": [
+	{ "uri": "/home/user/projects/chip/examples/st/ListUtil.v",
+	  "id": 3955365859,
+	  "checkable": true,
+	  "checksum": "60e8a717"
+	},
+	{ "uri": "/home/user/projects/chip/examples/st/Dedup.v",
+	  "id": 2758678171,
+	  "checkable": true,
+	  "checksum":"62f7cfdd"
+	}
+    ],
+    "bot": [
+	{ "uri": "ST.ListUtil.in_remove#body",
+	  "id": 2461010471,
+	  "checkable": true,
+	  "checksum": "30251b5b"
+	},
+	{ "uri": "ST.Dedup.remove_dedup#body",
+	  "id": 2433485337,
+	  "checkable": true,
+	  "checksum":"dd804e41"
+	},
+	{ "uri": "ST.ListUtil.in_remove#type",
+	  "id":2163935719,
+	  "checkable": false,
+	  "checksum": "6a7806de"
+	},
+	{ "uri": "ST.Dedup.dedup",
+	  "id": 591398152,
+	  "checkable": false,
+	  "checksum": "6a3206c51de703dc"
+	},
+	{ "uri": "ST.ListUtil.remove_preserve#body",
+	  "id": 3728870587,
+	  "checkable": true,
+	  "checksum": "9e602d3e"
+	},
+	{ "uri": "ST.Dedup.remove_dedup#type",
+	  "id": 2138507738,
+	  "checkable": false,
+	  "checksum": "69ad06ac"
+	},
+	{ "uri": "ST.ListUtil.remove_preserve#type",
+	  "id": 3345550460,
+	  "checkable": false,
+	  "checksum": "69c406b0"
+	}
+    ]
+}

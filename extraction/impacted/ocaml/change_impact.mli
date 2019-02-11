@@ -25,3 +25,16 @@ val topsort : int -> int ->
   (int -> bool) ->
   (int -> int list) ->
   int list
+
+val hierarchical_checkable_impacted_fresh :
+  int -> int -> (* top *)
+  (int -> int list) ->
+  (int -> string) ->
+  (int -> string) ->
+  int -> int -> (* bot *)
+  (int -> int list) ->
+  (int -> string) ->
+  (int -> string) ->
+  (int -> bool) ->
+  (int -> int list) -> (* partition *)
+  int list

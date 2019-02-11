@@ -89,20 +89,20 @@ let () =
   let successors k = succs_arr.(k) in
   let f_new k = let (_,_,_,checksum) = new_idx_arr.(k) in checksum in
   let f_old k = let (_,_,_,checksum) = old_idx_arr.(k) in checksum in
-  let rnb k = let (_,_,checkable,_) = new_idx_arr.(k) in checkable in
+  let chk k = let (_,_,checkable,_) = new_idx_arr.(k) in checkable in
 
-  let rnb_imp_fr =
+  let chk_imp_fr =
     Change_impact.checkable_impacted_fresh
       num_new num_old
       successors
       f_new f_old
-      rnb
+      chk
   in
 
   let res =
     List.map
       (fun k -> let (_,uri,_,_) = new_idx_arr.(k) in uri)
-      rnb_imp_fr
+      chk_imp_fr
   in
 
   print_string (string_of_list (fun s -> s) "\n" "\n" res)
