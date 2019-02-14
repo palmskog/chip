@@ -173,16 +173,8 @@ Variable checkable'_bot : pred V'.
 
 Variable p : U -> seq V.
 
-Definition succs_top_closure := @rclosure' U.
-Definition succs_top_closureP := rclosure'Pg.
-Definition succs_top_closure_uniq := rclosure'_uniq.
-
-(*Definition succs_bot_closure := @rclosure' V.
-Definition succs_bot_closureP := rclosure'Pg.
-Definition succs_bot_closure_uniq := rclosure'_uniq.*)
-
 Definition succs_hierarchical_checkable_impacted_fresh :=
-  @seq_checkable_impacted_fresh_sub A_top A_bot _ _ f'_top f'_bot _ _ f_top f_bot successors_top successors_bot p checkable'_bot succs_top_closure (@rclosure' _).
+  @seq_checkable_impacted_fresh_sub A_top A_bot _ _ f'_top f'_bot _ _ f_top f_bot successors_top successors_bot p checkable'_bot (@rclosure' _) (@rclosure' _).
 
 (*
 Variable successors'_top : U' -> seq U'.

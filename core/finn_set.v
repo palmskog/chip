@@ -8,7 +8,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq.
+Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq check_seq_hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -24,7 +24,7 @@ Notation m := m'.+1.
 Parameter H_mn : m <= n.
 End OrdinalsType.
 
-Module OrdinalsRunnableImpacted (Import OT : OrdinalsType).
+Module OrdinalsCheckableImpacted (Import OT : OrdinalsType).
 Local Notation A := [eqType of string].
 Local Notation V' := 'I_n.
 Definition lt_m_pred : pred V' := fun v => val v < m.
@@ -156,4 +156,75 @@ Qed.
 
 End Finn.
 
-End OrdinalsRunnableImpacted.
+End OrdinalsCheckableImpacted.
+
+Module Type TopBotPartition (OT_top : OrdinalsType) (OT_bot : OrdinalsType).
+Notation A_top := [eqType of string].
+Notation A_bot := [eqType of string].
+Notation n_top := OT_top.n.
+Notation m_top := OT_top.m.
+Notation n_bot := OT_bot.n.
+Notation m_bot := OT_bot.m.
+Notation U' := 'I_n_top.
+Notation V' := 'I_n_bot.
+Notation lt_m_top_pred := ((fun v => val v < m_top) : pred U').
+Notation U := (sig_finType lt_m_top_pred).
+Notation lt_m_bot_pred := ((fun v => val v < m_bot) : pred V').
+Notation V := (sig_finType lt_m_bot_pred).
+Parameter successors_top : U -> seq U.
+Parameter successors_bot : V -> seq V.
+Parameter f'_top : U' -> A_top.
+Parameter f_top : U -> A_top.
+Parameter f'_bot : V' -> A_bot.
+Parameter f_bot : V -> A_bot.
+Parameter checkable'_bot : pred V'.
+Parameter partition : U -> seq V.
+End TopBotPartition.
+
+Module OrdinalsHierarchicalCheckableImpacted
+ (OT_top : OrdinalsType) (OT_bot : OrdinalsType) (Import TBP : TopBotPartition OT_top OT_bot).
+
+Module UFinType <: FinType.
+Definition T : finType := U.
+End UFinType.
+
+Module UFinOrdType <: FinOrdType UFinType.
+Definition ordT : rel U := fun x y => subltn x y.
+Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val x).
+Definition trans_ordT : transitive ordT :=
+ fun x y z => @trans_ltn_nat (val x) (val y) (val z).
+Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
+ fun x y => total_ltn_nat (val x) (val y).
+End UFinOrdType.
+
+Module UFinOrdUsualOrderedType <: FinUsualOrderedType UFinType :=
+ FinOrdUsualOrderedType UFinType UFinOrdType.
+Module URBSet <: MSetInterface.S :=
+ MSetRBT.Make UFinOrdUsualOrderedType.
+Module UDFS := DFS UFinType UFinOrdUsualOrderedType URBSet.
+
+Local Notation V_seq_sub := (sig_finType (P_V_seq_sub f'_top f_top successors_top partition UDFS.elts_srclosure')).
+
+Module V_seq_subFinType <: FinType.
+Definition T : finType := V_seq_sub.
+End V_seq_subFinType.
+
+Module V_seq_subFinOrdType <: FinOrdType V_seq_subFinType.
+Definition ordT : rel V_seq_sub := fun x y => subltn (val x) (val y).
+Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val (val x)).
+Definition trans_ordT : transitive ordT :=
+ fun x y z => @trans_ltn_nat (val (val x)) (val (val y)) (val (val z)).
+Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
+ fun x y => total_ltn_nat (val (val x)) (val (val y)).
+End V_seq_subFinOrdType.
+
+Module V_seq_subFinOrdUsualOrderedType <: FinUsualOrderedType V_seq_subFinType :=
+ FinOrdUsualOrderedType V_seq_subFinType V_seq_subFinOrdType.
+Module V_seq_subRBSet <: MSetInterface.S :=
+ MSetRBT.Make V_seq_subFinOrdUsualOrderedType.
+Module V_seq_subDFS := DFS V_seq_subFinType V_seq_subFinOrdUsualOrderedType V_seq_subRBSet.
+
+Definition succs_hierarchical_checkable_impacted_fresh :=
+  @seq_checkable_impacted_fresh_sub A_top A_bot _ _ f'_top f'_bot _ _ f_top f_bot successors_top successors_bot partition checkable'_bot UDFS.elts_srclosure' V_seq_subDFS.elts_srclosure'.
+
+End OrdinalsHierarchicalCheckableImpacted.

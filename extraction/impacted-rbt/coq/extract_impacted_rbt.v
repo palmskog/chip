@@ -30,4 +30,4 @@ Extract Constant SetDef.pred_of_set => "fun t a -> Obj.magic (FunFinfun.fun_of_f
 
 Extract Constant fintype.Finite.base2 => "fun c -> { Countable.base = c.base; Countable.mixin = (Obj.magic mixin_base __ c.mixin) }".
 
-Extraction "extraction/impacted-rbt/ocaml/impacted_rbt.ml" set_subType OrdinalsRunnableImpacted.
+Extraction "extraction/impacted-rbt/ocaml/impacted_rbt.ml" set_subType OrdinalsCheckableImpacted OrdinalsHierarchicalCheckableImpacted.
