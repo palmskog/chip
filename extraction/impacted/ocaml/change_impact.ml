@@ -1,11 +1,11 @@
 open Impacted
 open Util
 
-let succs_hierarchical_checkable_impacted_fresh
+(*let succs_hierarchical_checkable_impacted_fresh
     _ _ _ _ _
     _ _ _ _ _ _
     _ =
-  []
+  []*)
 
 let checkable_impacted num successors f_new f_old chk =
   Obj.magic

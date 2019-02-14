@@ -4,7 +4,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import connect acyclic string kosaraju topos close_dfs check change check_seq.
+Require Import connect acyclic string kosaraju topos close_dfs check change check_seq check_seq_hierarchical.
 
 Section Finn.
 
@@ -128,3 +128,78 @@ apply: ts_g'rev_imf_checkable_val_before; eauto.
 Qed.
 
 End Finn.
+
+Section FinnHierarchical.
+
+Local Notation A_top := [eqType of string].
+Local Notation A_bot := [eqType of string].
+
+Variable n_top : nat.
+Variable m'_top : nat.
+
+Local Notation m_top := m'_top.+1.
+
+Hypothesis H_mn_top : m_top <= n_top.
+
+Local Notation U' := 'I_n_top.
+
+Definition lt_m_top_pred : pred U' := fun v => val v < m_top.
+
+Local Notation U := (sig_finType lt_m_top_pred).
+
+Variable successors_top : U -> seq U.
+
+Variable f'_top : U' -> A_top.
+Variable f_top : U -> A_top.
+
+Variable n_bot : nat.
+Variable m'_bot : nat.
+
+Local Notation m_bot := m'_bot.+1.
+
+Hypothesis H_mn_bot : m_bot <= n_bot.
+
+Local Notation V' := 'I_n_bot.
+
+Definition lt_m_bot_pred : pred V' := fun v => val v < m_bot.
+
+Local Notation V := (sig_finType lt_m_bot_pred).
+
+Variable successors_bot : V -> seq V.
+
+Variable f'_bot : V' -> A_bot.
+Variable f_bot : V -> A_bot.
+Variable checkable'_bot : pred V'.
+
+Variable p : U -> seq V.
+
+Definition succs_top_closure := @rclosure' U.
+Definition succs_top_closureP := rclosure'Pg.
+Definition succs_top_closure_uniq := rclosure'_uniq.
+
+(*Definition succs_bot_closure := @rclosure' V.
+Definition succs_bot_closureP := rclosure'Pg.
+Definition succs_bot_closure_uniq := rclosure'_uniq.*)
+
+Definition succs_hierarchical_checkable_impacted_fresh :=
+  @seq_checkable_impacted_fresh_sub A_top A_bot _ _ f'_top f'_bot _ _ f_top f_bot successors_top successors_bot p checkable'_bot succs_top_closure (@rclosure' _).
+
+(*
+Variable successors'_top : U' -> seq U'.
+Variable (g_top : rel U).
+Hypothesis g_top_grev : [rel x y | g_top y x] =2 grel successors_top.
+*)
+
+Variable (g_bot : rel V).
+
+Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel successors_bot.
+
+(*
+Lemma succs_hierarchical_checkable_impacted_fresh_eq :
+ checkable_impactedV' f'_bot f_bot g_bot checkable'_bot =i succs_hierarchical_checkable_impacted_fresh.
+Proof.
+exact: succs_closureP.
+Qed.
+*)
+
+End FinnHierarchical.

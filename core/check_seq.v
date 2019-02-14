@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect check change acyclic kosaraju topos.
+Require Import extra closure connect check change acyclic kosaraju topos.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

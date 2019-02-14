@@ -36,21 +36,14 @@ Variable (R : eqType).
 
 Variable (check : V' -> R).
 
-Variables (p : U -> {set V}) (p' : U' -> {set V'}).
+Variables (p : U -> {set V}).
 
 Hypothesis p_neq : forall (u u' : U), u <> u' -> p u <> p u'.
 
-Hypothesis p'_neq : forall (u u' : U'), u <> u' -> p' u <> p' u'.
-
 Hypothesis p_partition : partition (\bigcup_( u | u \in U ) [set p u]) [set: V].
-
-Hypothesis p'_partition : partition (\bigcup_( u | u \in U' ) [set p' u]) [set: V'].
 
 Hypothesis g_bot_top : forall (v v' : V) (u u' : U),
  u <> u' -> g_bot v v' -> v \in p u -> v' \in p u' -> g_top u u'.
-
-Hypothesis f_top_partition : forall (u : U),
- f_top u = f'_top (val u) -> [set val v | v in p u] = p' (val u).
 
 Hypothesis f_top_bot : forall (u : U),
  f_top u = f'_top (val u) -> forall (v : V), v \in p u -> f_bot v = f'_bot (val v).
