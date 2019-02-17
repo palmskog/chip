@@ -70,7 +70,7 @@ let hierarchical_checkable_impacted_fresh
         let f'_bot = Obj.magic (fun x -> char_list_of_string (bot_f_new x))
         let f_bot = Obj.magic (fun x -> char_list_of_string (bot_f_old x))
         let checkable'_bot = bot_chk
-        let partition = Obj.magic p
+        let p = Obj.magic p
       end
   in
   let module OHCI = OrdinalsHierarchicalCheckableImpacted (OrdsTop) (OrdsBot) (TopBot) in

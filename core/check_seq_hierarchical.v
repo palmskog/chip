@@ -39,31 +39,27 @@ Hypothesis clos_topP : forall successors (s : seq U) (x : U),
     (exists2 v, v \in s & connect (grel successors) v x)
     (x \in clos_top successors s).
 
-Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
-Definition seq_impactedU := clos_top g_top_rev seq_modifiedU.
+Variable clos_bot : (V -> seq V) -> seq V -> seq V.
 
-Definition seq_pimpacted_sub_V := flatten (map p seq_impactedU).
-
-Definition P_V_seq_sub v := v \in seq_pimpacted_sub_V.
-
-Local Notation V_seq_sub := (sig_finType P_V_seq_sub).
-
-Definition g_bot_rev_sub (v : V_seq_sub) : seq V_seq_sub :=
-  pmap insub (g_bot_rev (val v)).
-
-Definition seq_modifiedV_bot := [seq v <- enum V | f_bot v != f'_bot (val v)].
-Definition seq_modifiedV_sub := [seq v <- enum V_seq_sub | val v \in seq_modifiedV_bot].
-
-Variable clos_bot : (V_seq_sub -> seq V_seq_sub) -> seq V_seq_sub -> seq V_seq_sub.
-
-Hypothesis clos_botP : forall successors (s : seq V_seq_sub) (x : V_seq_sub),
+Hypothesis clos_botP : forall successors (s : seq V) (x : V),
   reflect
     (exists2 v, v \in s & connect (grel successors) v x)
     (x \in clos_bot successors s).
 
-Definition seq_impactedV_sub := clos_bot g_bot_rev_sub seq_modifiedV_sub.
+(* defs *)
 
-Definition seq_impactedVV'_sub := [seq val (val v) | v <- seq_impactedV_sub].
+Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
+Definition seq_impactedU := clos_top g_top_rev seq_modifiedU.
+
+Definition seq_pmodified_V := flatten [seq (p v) | v <- seq_modifiedU].
+Definition seq_pimpacted_V := flatten [seq (p v) | v <- seq_impactedU].
+
+Definition P_V_seq_sub v := v \in seq_pimpacted_V.
+Definition g_bot_rev_sub (v : V) := [seq v <- g_bot_rev v | P_V_seq_sub v].
+
+Definition seq_modifiedV_sub := [seq v <- seq_pmodified_V | f_bot v != f'_bot (val v)].
+Definition seq_impactedV_sub := clos_bot g_bot_rev_sub seq_modifiedV_sub.
+Definition seq_impactedVV'_sub := [seq val v | v <- seq_impactedV_sub].
 
 Definition seq_freshV' := [seq v <- enum V' | ~~ P_bot v].
 
@@ -134,7 +130,7 @@ Variables (ps : U -> {set V}).
 Hypothesis p_ps_eq : forall u : U, p u =i ps u.
 
 Lemma seq_pimpacted_V_eq :
-  pimpacted_sub_V f'_top g_top f_top ps =i seq_pimpacted_sub_V.
+  pimpacted_sub_V f'_top g_top f_top ps =i seq_pimpacted_V.
 Proof.
 move => x.  
 apply/bigcupP.
@@ -152,6 +148,35 @@ case: ifP => Hm.
   by rewrite -seq_impactedU_eq.
 Qed.
 
+Lemma P_V_sub_V_seq_sub_eq : 
+  P_V_sub f'_top g_top f_top ps =i P_V_seq_sub.
+Proof.
+move => x.
+apply/idP/idP.
+- by rewrite seq_pimpacted_V_eq.
+- by rewrite seq_pimpacted_V_eq.
+Qed.
+
+(*
+Lemma seq_modifiedV_bot_eq : modifiedV f'_bot f_bot =i seq_modifiedV_bot.
+Proof.
+by move => x; rewrite inE mem_filter mem_enum andb_idr.
+Qed.
+*)
+
+(*
+Lemma seq_modifiedV_sub_eq :
+  forall x,  \in 
+  modifiedV_sub f'_top f'_bot g_top f_top f_bot ps =i seq_modifiedV_sub.
+
+
+Lemma V_sub_V_seq_sub_eq :
+  forall v : V,  Sub v \in (sig_finType (P_V_sub f'_top g_top f_top ps)).
+       v \in V_seq_sub.
+
+  (sig_finType (P_V_sub f'_top g_top f_top ps)) =i V_seq_sub.
+*)
+
 Variable g_bot : rel V.
 
 Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel g_bot_rev.
@@ -159,6 +184,8 @@ Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel g_bot_rev.
 (*
 Lemma seq_impactedV_sub :
   impactedV_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impactedV_sub.
-*)
+ *)
+
+(*Lemma seq_impacted_fresh_sub_uniq : *)
 
 End CheckedSeqHierarchical.

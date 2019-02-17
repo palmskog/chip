@@ -8,7 +8,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq check_seq_hierarchical.
+Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -167,10 +167,10 @@ Notation n_bot := OT_bot.n.
 Notation m_bot := OT_bot.m.
 Notation U' := 'I_n_top.
 Notation V' := 'I_n_bot.
-Notation lt_m_top_pred := ((fun v => val v < m_top) : pred U').
-Notation U := (sig_finType lt_m_top_pred).
-Notation lt_m_bot_pred := ((fun v => val v < m_bot) : pred V').
-Notation V := (sig_finType lt_m_bot_pred).
+Notation P_top := ((fun v => val v < m_top) : pred U').
+Notation U := (sig_finType P_top).
+Notation P_bot := ((fun v => val v < m_bot) : pred V').
+Notation V := (sig_finType P_bot).
 Parameter successors_top : U -> seq U.
 Parameter successors_bot : V -> seq V.
 Parameter f'_top : U' -> A_top.
@@ -178,7 +178,7 @@ Parameter f_top : U -> A_top.
 Parameter f'_bot : V' -> A_bot.
 Parameter f_bot : V -> A_bot.
 Parameter checkable'_bot : pred V'.
-Parameter partition : U -> seq V.
+Parameter p : U -> seq V.
 End TopBotPartition.
 
 Module OrdinalsHierarchicalCheckableImpacted
@@ -199,32 +199,83 @@ End UFinOrdType.
 
 Module UFinOrdUsualOrderedType <: FinUsualOrderedType UFinType :=
  FinOrdUsualOrderedType UFinType UFinOrdType.
-Module URBSet <: MSetInterface.S :=
+Module USet <: MSetInterface.S :=
  MSetRBT.Make UFinOrdUsualOrderedType.
-Module UDFS := DFS UFinType UFinOrdUsualOrderedType URBSet.
+Module UDFS := DFS UFinType UFinOrdUsualOrderedType USet.
 
-Local Notation V_seq_sub := (sig_finType (P_V_seq_sub f'_top f_top successors_top partition UDFS.elts_srclosure')).
+Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
+Definition seq_impactedU := UDFS.elts_srclosure' successors_top seq_modifiedU.
 
-Module V_seq_subFinType <: FinType.
-Definition T : finType := V_seq_sub.
-End V_seq_subFinType.
+(*
+Definition seq_modifiedU' := [seq (val u) | u <- seq_modifiedU].
+Definition seq_freshU' := [seq u <- enum U' | ~~ P_top u].
+Definition seq_modified_freshU' := seq_modifiedU' ++ seq_freshU'.
+*)
 
-Module V_seq_subFinOrdType <: FinOrdType V_seq_subFinType.
-Definition ordT : rel V_seq_sub := fun x y => subltn (val x) (val y).
+Module VFinType <: FinType.
+Definition T : finType := V.
+End VFinType.
+
+Module VFinOrdType <: FinOrdType VFinType.
+Definition ordT : rel V := fun x y => subltn x y.
+Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val x).
+Definition trans_ordT : transitive ordT :=
+ fun x y z => @trans_ltn_nat (val x) (val y) (val z).
+Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
+ fun x y => total_ltn_nat (val x) (val y).
+End VFinOrdType.
+
+Module VFinOrdUsualOrderedType <: FinUsualOrderedType VFinType :=
+ FinOrdUsualOrderedType VFinType VFinOrdType.
+Module VSet <: MSetInterface.S :=
+ MSetRBT.Make VFinOrdUsualOrderedType.
+Module VDFS := DFS VFinType VFinOrdUsualOrderedType VSet.
+
+Definition seq_pmodified_V := flatten [seq (p v) | v <- seq_modifiedU].
+Definition seq_pimpacted_V := flatten [seq (p v) | v <- seq_impactedU].
+Definition mset_pimpacted_V := foldl (fun s v => VSet.add v s) VSet.empty seq_pimpacted_V.
+
+Definition P_V_mset_sub v := VSet.mem v mset_pimpacted_V.
+Definition successors_bot_sub (v : V) := [seq v <- successors_bot v | P_V_mset_sub v].
+
+(*
+Local Notation V_mset_sub := (sig_finType P_V_mset_sub).
+
+Module V_mset_subFinType <: FinType.
+Definition T : finType := V_mset_sub.
+End V_mset_subFinType.
+
+Module V_mset_subFinOrdType <: FinOrdType V_mset_subFinType.
+Definition ordT : rel V_mset_sub := fun x y => subltn (val x) (val y).
 Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val (val x)).
 Definition trans_ordT : transitive ordT :=
  fun x y z => @trans_ltn_nat (val (val x)) (val (val y)) (val (val z)).
 Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
  fun x y => total_ltn_nat (val (val x)) (val (val y)).
-End V_seq_subFinOrdType.
+End V_mset_subFinOrdType.
 
-Module V_seq_subFinOrdUsualOrderedType <: FinUsualOrderedType V_seq_subFinType :=
- FinOrdUsualOrderedType V_seq_subFinType V_seq_subFinOrdType.
-Module V_seq_subRBSet <: MSetInterface.S :=
- MSetRBT.Make V_seq_subFinOrdUsualOrderedType.
-Module V_seq_subDFS := DFS V_seq_subFinType V_seq_subFinOrdUsualOrderedType V_seq_subRBSet.
+Module V_mset_subFinOrdUsualOrderedType <: FinUsualOrderedType V_mset_subFinType :=
+ FinOrdUsualOrderedType V_mset_subFinType V_mset_subFinOrdType.
+Module V_mset_subSet <: MSetInterface.S :=
+ MSetRBT.Make V_mset_subFinOrdUsualOrderedType.
+Module V_mset_subDFS := DFS V_mset_subFinType V_mset_subFinOrdUsualOrderedType V_mset_subSet.
+
+Definition successors_bot_sub (v : V_mset_sub) : seq V_mset_sub :=
+  pmap insub (successors_bot (val v)).
+*)
+
+Definition seq_modifiedV_sub := [seq v <- seq_pmodified_V | f_bot v != f'_bot (val v)].
+Definition seq_impactedV_sub := VDFS.elts_srclosure' successors_bot_sub seq_modifiedV_sub.
+Definition seq_impactedVV'_sub := [seq val v | v <- seq_impactedV_sub].
+
+Definition seq_freshV' := [seq v <- enum V' | ~~ P_bot v].
+
+Definition seq_impacted_fresh_sub := seq_impactedVV'_sub ++ seq_freshV'.
+
+Definition seq_checkable_impacted_fresh_sub :=
+  [seq v <- seq_impacted_fresh_sub | checkable'_bot v].
 
 Definition succs_hierarchical_checkable_impacted_fresh :=
-  @seq_checkable_impacted_fresh_sub A_top A_bot _ _ f'_top f'_bot _ _ f_top f_bot successors_top successors_bot partition checkable'_bot UDFS.elts_srclosure' V_seq_subDFS.elts_srclosure'.
+  seq_checkable_impacted_fresh_sub.
 
 End OrdinalsHierarchicalCheckableImpacted.
