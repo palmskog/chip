@@ -1,3 +1,8 @@
+val modified : int -> int ->
+  (int -> string) ->
+  (int -> string) ->
+  int list
+
 val checkable_impacted : int ->
   (int -> int list) ->
   (int -> string) ->

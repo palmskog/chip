@@ -33,6 +33,7 @@ Definition succs_closure := @rclosure' V.
 Definition succs_closureP := rclosure'Pg.
 Definition succs_closure_uniq := rclosure'_uniq.
 
+Definition succs_modified := seq_modifiedV f' f.
 Definition succs_checkable_impacted :=
  seq_checkable_impacted f' f successors checkable' succs_closure.
 Definition succs_impacted_fresh :=

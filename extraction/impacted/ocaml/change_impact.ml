@@ -1,6 +1,13 @@
 open Impacted
 open Util
 
+let modified num_new num_old f_new f_old =
+  Obj.magic
+    (succs_modified
+       num_new (num_old-1)
+       (Obj.magic (fun x -> char_list_of_string (f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (f_old x))))
+
 let checkable_impacted num successors f_new f_old chk =
   Obj.magic
     (succs_checkable_impacted

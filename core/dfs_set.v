@@ -113,7 +113,7 @@ End FinOrdUsualOrderedType.
 Module DFS (Import FT : FinType) (FUOT : FinUsualOrderedType FT) (MS : MSetInterface.S with Module E := FUOT).
 
 Module MSF := Facts MS.
-  
+
 Fixpoint sdfs g n s x :=
   if MS.mem x s then s else
   if n is n'.+1 then foldl (sdfs g n') (MS.add x s) (g x) else s.
