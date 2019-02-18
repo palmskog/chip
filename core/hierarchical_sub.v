@@ -48,7 +48,9 @@ Hypothesis g_bot_top : forall (v v' : V) (u u' : U),
 Hypothesis f_top_bot : forall (u : U),
  f_top u = f'_top (val u) -> forall (v : V), v \in p u -> f_bot v = f'_bot (val v).
 
-Definition pimpacted_sub_V := pimpacted_V f'_top g_top f_top p.
+Definition pmodified_sub_V : {set V} := \bigcup_(u | u \in modifiedV f'_top f_top) (p u).
+
+Definition pimpacted_sub_V : {set V} := pimpacted_V f'_top g_top f_top p.
 
 Definition P_V_sub v := v \in pimpacted_sub_V.
 
@@ -56,7 +58,8 @@ Local Notation V_sub := (sig_finType P_V_sub).
 
 Local Notation g_bot_sub := [rel x y : V_sub | g_bot (val x) (val y)].
 
-Definition modifiedV_sub := [set v : V_sub | val v \in modifiedV f'_bot f_bot].
+Definition modifiedV_sub :=
+ [set v : V_sub | val v \in pmodified_sub_V & f_bot (val v) != f'_bot (val (val v))].
 
 Definition impactedV_sub := impacted g_bot_sub^-1 modifiedV_sub.
 
@@ -65,6 +68,48 @@ Definition impactedVV'_sub := [set val (val v) | v in impactedV_sub].
 Definition impactedV'_sub := impactedVV'_sub :|: freshV' P_bot.
 
 Definition impacted_fresh_sub : seq V' := enum impactedV'_sub.
+
+Lemma modifiedV_pmodified_sub_V : forall v,
+  v \in modifiedV f'_bot f_bot -> v \in pmodified_sub_V.
+Proof.
+move => v.
+rewrite inE => Hv.
+apply/bigcupP.
+have Hp := p_partition.
+move/andP: Hp => [Hc Hp].
+move/andP: Hp => [Htr H0].
+move: Hc.
+rewrite /cover.
+move/eqP => Hc.
+have Hvv: v \in \bigcup_(B in \bigcup_(u in U) [set p u]) B by rewrite Hc.
+move/bigcupP: Hvv => [vs Hvv] Hvs.
+move/bigcupP: Hvv => [u Hu] Huvs.
+exists u; last by move: Huvs; rewrite inE; move/eqP =><-.
+rewrite inE.
+apply/eqP => Hf.
+move/eqP: Hv; case.
+have Hftb := f_top_bot Hf.
+apply: Hftb.
+by move: Huvs; rewrite inE; move/eqP =><-.
+Qed.
+
+Lemma modifiedV_sub_modifiedV_eq : forall v,
+  (v \in modifiedV_sub) = (val v \in modifiedV f'_bot f_bot).
+Proof.
+move => v.
+apply/idP/idP.
+- rewrite inE.
+  move/andP => [Hp Hf].
+  by rewrite inE.
+- move => Hv.
+  have Hv' := Hv.  
+  move/modifiedV_pmodified_sub_V: Hv'.
+  move: Hv.
+  rewrite inE.
+  move => Hf Hv.
+  rewrite inE.
+  by apply/andP.
+Qed.  
 
 Lemma impactedV_sub_impactedV_eq : forall v,
   v \in impactedV_sub ->
@@ -78,7 +123,7 @@ move: Hc.
 move/connect_rev.
 rewrite /= => Hc.
 apply/impactedP.
-exists (val v0); first by move: Hm; rewrite in_set.
+exists (val v0); first by move: Hm; rewrite modifiedV_sub_modifiedV_eq.
 apply connect_rev.
 rewrite in_set in Hm.
 exact: gsub_connect.
@@ -100,7 +145,7 @@ move: Hc.
 move/connect_rev.
 rewrite /= => Hc.
 apply/impactedVP.
-exists u; first by rewrite in_set; rewrite e.
+exists u; first by move: Hv0; rewrite -e modifiedV_sub_modifiedV_eq.
 apply/connect_rev.
 rewrite /=.
 move: Hc.
