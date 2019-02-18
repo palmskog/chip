@@ -158,7 +158,8 @@ End Finn.
 
 End OrdinalsCheckableImpacted.
 
-Module Type TopBotPartition (OT_top : OrdinalsType) (OT_bot : OrdinalsType).
+Module OrdinalsHierarchicalCheckableImpacted (OT_top : OrdinalsType) (OT_bot : OrdinalsType).
+
 Notation A_top := [eqType of string].
 Notation A_bot := [eqType of string].
 Notation n_top := OT_top.n.
@@ -171,18 +172,6 @@ Notation P_top := ((fun v => val v < m_top) : pred U').
 Notation U := (sig_finType P_top).
 Notation P_bot := ((fun v => val v < m_bot) : pred V').
 Notation V := (sig_finType P_bot).
-Parameter successors_top : U -> seq U.
-Parameter successors_bot : V -> seq V.
-Parameter f'_top : U' -> A_top.
-Parameter f_top : U -> A_top.
-Parameter f'_bot : V' -> A_bot.
-Parameter f_bot : V -> A_bot.
-Parameter checkable'_bot : pred V'.
-Parameter p : U -> seq V.
-End TopBotPartition.
-
-Module OrdinalsHierarchicalCheckableImpacted
- (OT_top : OrdinalsType) (OT_bot : OrdinalsType) (Import TBP : TopBotPartition OT_top OT_bot).
 
 Module UFinType <: FinType.
 Definition T : finType := U.
@@ -203,15 +192,6 @@ Module USet <: MSetInterface.S :=
  MSetRBT.Make UFinOrdUsualOrderedType.
 Module UDFS := DFS UFinType UFinOrdUsualOrderedType USet.
 
-Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
-Definition seq_impactedU := UDFS.elts_srclosure' successors_top seq_modifiedU.
-
-(*
-Definition seq_modifiedU' := [seq (val u) | u <- seq_modifiedU].
-Definition seq_freshU' := [seq u <- enum U' | ~~ P_top u].
-Definition seq_modified_freshU' := seq_modifiedU' ++ seq_freshU'.
-*)
-
 Module VFinType <: FinType.
 Definition T : finType := V.
 End VFinType.
@@ -230,6 +210,30 @@ Module VFinOrdUsualOrderedType <: FinUsualOrderedType VFinType :=
 Module VSet <: MSetInterface.S :=
  MSetRBT.Make VFinOrdUsualOrderedType.
 Module VDFS := DFS VFinType VFinOrdUsualOrderedType VSet.
+
+Section FinnHierarchical.
+
+Variable successors_top : U -> seq U.
+Variable successors_bot : V -> seq V.
+
+Variable f'_top : U' -> A_top.
+Variable f_top : U -> A_top.
+
+Variable f'_bot : V' -> A_bot.
+Variable f_bot : V -> A_bot.
+
+Variable checkable'_bot : pred V'.
+
+Variable p : U -> seq V.
+
+Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
+Definition seq_impactedU := UDFS.elts_srclosure' successors_top seq_modifiedU.
+
+(*
+Definition seq_modifiedU' := [seq (val u) | u <- seq_modifiedU].
+Definition seq_freshU' := [seq u <- enum U' | ~~ P_top u].
+Definition seq_modified_freshU' := seq_modifiedU' ++ seq_freshU'.
+*)
 
 Definition seq_pmodified_V := flatten [seq (p v) | v <- seq_modifiedU].
 Definition seq_pimpacted_V := flatten [seq (p v) | v <- seq_impactedU].
@@ -277,5 +281,7 @@ Definition seq_checkable_impacted_fresh_sub :=
 
 Definition succs_hierarchical_checkable_impacted_fresh :=
   seq_checkable_impacted_fresh_sub.
+
+End FinnHierarchical.
 
 End OrdinalsHierarchicalCheckableImpacted.
