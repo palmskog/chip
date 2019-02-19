@@ -220,7 +220,7 @@ apply/idP/idP.
   have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) (val y)).
   by destruct H_sp; last by case/negP: i; apply valP.
 Qed.
- 
+
 Lemma connect_rel_sub : forall (y z : sig_finType (P_V_sub f'_top g_top f_top ps)),
   connect [rel x0 y0 | g_bot (val x0) (val y0)] y z ->
   connect (grel g_bot_rev_sub) (val z) (val y).
@@ -261,31 +261,6 @@ rewrite -Hg in Hgb.
 split => //.
 by apply: IH.
 Qed.
-
-(*
-Lemma connect_sub_rel : forall (y z : sig_finType (P_V_sub f'_top g_top f_top ps)),
-  connect (grel g_bot_rev_sub) (val z) (val y) ->    
-  connect [rel x0 y0 | g_bot (val x0) (val y0)] y z.
-Proof.
-move => y z.
-move/connect_rev.
-move/connectP => [pt Hpt] Hz.
-apply/connectP.
-exists (pmap insub pt); last first.
-  elim: pt z y Hz Hpt => //; first by move => z y; move/val_inj.
-  move => a pt IH z y.
-  rewrite /= => Hl.
-  rewrite /oapp /=.
-  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) a).
-  move: H_sp.
-  case; last first.
-    move => Hp.
-    move/andP => [Hg Hr].
-    rewrite /= /g_bot_rev_sub mem_filter in Hg.
-    clear IH Hl.
-    case: pt Hr => //=.
-Admitted.
-*)
 
 Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
  u <> u' -> g_bot v v' -> v \in ps u -> v' \in ps u' -> g_top u u'.
