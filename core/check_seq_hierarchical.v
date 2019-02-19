@@ -196,6 +196,102 @@ apply/idP/idP.
   by rewrite -seq_modifiedU_eq.
 Qed.
 
+Lemma g_bot_rev_sub_eqq : forall x y : sig_finType (P_V_sub f'_top g_top f_top ps),
+  ((grel g_bot_rev_sub) (val x) (val y)) = (g_bot (val y) (val x)).
+Proof.
+move => x y.
+rewrite /=.
+apply/idP/idP.
+- rewrite mem_filter.
+  move/andP.
+  move => [Hp Hv].
+  have Hb := g_bot_grev (val x) (val y).
+  rewrite /= in Hb.
+  by rewrite -Hb in Hv.
+- have Hb := g_bot_grev (val x) (val y).
+  rewrite /= in Hb.
+  rewrite Hb /=.
+  move => Hs.
+  rewrite mem_filter.
+  rewrite Hs.
+  apply/andP; split => //.
+  rewrite /P_V_seq_sub.
+  rewrite -P_V_sub_V_seq_sub_eq.
+  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) (val y)).
+  by destruct H_sp; last by case/negP: i; apply valP.
+Qed.
+ 
+Lemma connect_rel_sub : forall (y z : sig_finType (P_V_sub f'_top g_top f_top ps)),
+  connect [rel x0 y0 | g_bot (val x0) (val y0)] y z ->
+  connect (grel g_bot_rev_sub) (val z) (val y).
+Proof.
+move => y z.
+move/connectP => [pt Hpt] Hz.
+apply connect_rev.
+apply/connectP.
+exists (map val pt); last by rewrite last_map Hz.
+clear Hz.
+elim: pt y Hpt => //.
+move => a pt IH y.
+rewrite /=.
+move/andP => [Hg Hp].
+apply/andP.
+split; last by apply: IH.
+by rewrite -g_bot_rev_sub_eqq in Hg.
+Qed.
+
+Lemma connect_g_bot_rev_sub_g_bot_rev : forall v y,
+  connect (grel g_bot_rev_sub) v y ->
+  connect g_bot^-1 v y.
+Proof.
+move => v y.
+move/connectP => [pt Hpt] Hl.
+apply/connectP.
+exists pt => //.
+elim: pt v Hpt {Hl} => //.
+move => z pt IH v.
+rewrite /=.
+move/andP => [Hz Hp].
+apply/andP.
+rewrite mem_filter in Hz.
+move/andP: Hz => [Hzp Hgb].
+have Hg := g_bot_grev v z.
+rewrite /= in Hg.
+rewrite -Hg in Hgb.
+split => //.
+by apply: IH.
+Qed.
+
+(*
+Lemma connect_sub_rel : forall (y z : sig_finType (P_V_sub f'_top g_top f_top ps)),
+  connect (grel g_bot_rev_sub) (val z) (val y) ->    
+  connect [rel x0 y0 | g_bot (val x0) (val y0)] y z.
+Proof.
+move => y z.
+move/connect_rev.
+move/connectP => [pt Hpt] Hz.
+apply/connectP.
+exists (pmap insub pt); last first.
+  elim: pt z y Hz Hpt => //; first by move => z y; move/val_inj.
+  move => a pt IH z y.
+  rewrite /= => Hl.
+  rewrite /oapp /=.
+  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) a).
+  move: H_sp.
+  case; last first.
+    move => Hp.
+    move/andP => [Hg Hr].
+    rewrite /= /g_bot_rev_sub mem_filter in Hg.
+    clear IH Hl.
+    case: pt Hr => //=.
+Admitted.
+*)
+
+Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
+ u <> u' -> g_bot v v' -> v \in ps u -> v' \in ps u' -> g_top u u'.
+
+Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
+
 Lemma seq_impactedVV'_sub_eq :
   impactedVV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impactedVV'_sub.
 Proof.
@@ -209,13 +305,10 @@ apply/idP/idP.
   exists (val z); first by rewrite seq_modifiedV_sub_eq.
   move: Hyz.
   move/connect_rev => /=.
-  (*move/connectP => [s Hs] Hzs.
-  apply/connectP.
-  exists (map val s). *)
-  by admit.
+  by apply connect_rel_sub.
 - move/mapP => [y Hy] Hyx.
   move/clos_botP: Hy => [v Hv] Hc.
-  apply/imsetP.   
+  apply/imsetP.  
   have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) v).
   destruct H_sp; last first.
     case/negP: i.
@@ -232,34 +325,54 @@ apply/idP/idP.
       by exists u.
     move: Hv.
     by apply modifiedV_pmodified_sub_V.
-  rewrite -e in Hv.  
-  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) y).
-  destruct H_sp; last first.
-    case/negP: i0.
-    rewrite /P_V_sub.
-    rewrite seq_modifiedV_sub_eq in Hv.
-    suff Hsuff: y \in impacted g_bot^-1 (modifiedV f'_bot f_bot).    
-      apply/bigcupP.
-      
-    (*
-    suff Hsuff: y \in impactedV_sub f'_top f'_bot g_top g_bot f_top f_bot ps.
-    
-    apply/bigcupP.
-    
-    move: Hv.
-    rewrite mem_filter.
-    move/andP => [Hf Hs].
-    suff Hsuff: y \in seq_pimpacted_V by rewrite seq_pimpacted_V_eq.
-    
-    
-    apply/bigcupP.
-
-    
   rewrite -e in Hv.
   rewrite seq_modifiedV_sub_eq in Hv.
-  exists u; last first.
-  rewrite e.*)
-Admitted.
+  apply connect_g_bot_rev_sub_g_bot_rev in Hc.
+  rewrite inE in Hv.
+  move/andP: Hv => [Hvp Hfb].
+  rewrite e in Hfb.
+  have Hyi: y \in impacted g_bot^-1 (modifiedV f'_bot f_bot).
+    apply/impactedP.
+    exists v => //.
+    by rewrite inE.
+  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) y).
+  destruct H_sp.
+    rewrite -e0 in Hyi.
+    apply impactedV_impactedV_sub_eq in Hyi => //.
+    by exists u0; last by rewrite e0.  
+  case/negP: i0.
+  rewrite /P_V_sub.
+  rewrite /pimpacted_sub_V /pimpacted_V.
+  apply/bigcupP.
+  have Hp := ps_partition.
+  move/andP: Hp => [Hcc Hp].
+  move/andP: Hp => [Htr H0].
+  move: Hcc.
+  rewrite /cover.
+  move/eqP => Hcc.
+  have Hyy: y \in \bigcup_(B in \bigcup_(u in U) [set ps u]) B by rewrite Hcc inE.
+  move/bigcupP: Hyy => [ys Hyy] Hys.
+  move/bigcupP: Hyy => [u0 Hu0] Huys.
+  exists u0; last by move: Huys; rewrite inE; move/eqP =><-.
+  rewrite inE in Huys.
+  move/eqP: Huys => Huys.
+  rewrite Huys in Hys.
+  apply/impactedP.
+  have Hvv: v \in \bigcup_(B in \bigcup_(u in U) [set ps u]) B by rewrite Hcc inE.
+  move/bigcupP: Hvv => [vs Hvv] Hvs.
+  move/bigcupP: Hvv => [u1 Hu1] Huvs.
+  rewrite inE in Huvs.
+  move/eqP: Huvs => Huvs.
+  rewrite Huvs in Hvs.
+  exists u1.
+  - rewrite inE.
+    apply/eqP => Hf.
+    case/negP: Hfb.
+    apply/eqP.    
+    by have f_topb := f_top_bot_ps Hf Hvs.
+  - move: Hys Hvs Hc.
+    by apply connect_rev_v_u.
+Qed.
 
 Lemma seq_impactedV'_sub_eq :
   impactedV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impacted_fresh_sub.
@@ -281,11 +394,6 @@ apply/idP/idP.
     right.
     by rewrite seq_freshV'_eq.
 Qed.
-
-Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
- u <> u' -> g_bot v v' -> v \in ps u -> v' \in ps u' -> g_top u u'.
-
-Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
 
 Lemma seq_impactedV'_sub_correct :
   seq_impacted_fresh_sub =i impactedV' f'_bot f_bot g_bot.
