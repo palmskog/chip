@@ -129,6 +129,8 @@ Variables (ps : U -> {set V}).
 
 Hypothesis p_ps_eq : forall u : U, p u =i ps u.
 
+Hypothesis ps_partition : partition (\bigcup_( u | u \in U ) [set ps u]) [set: V].
+
 Lemma seq_pimpacted_V_eq :
   pimpacted_sub_V f'_top g_top f_top ps =i seq_pimpacted_V.
 Proof.
@@ -157,35 +159,143 @@ apply/idP/idP.
 - by rewrite seq_pimpacted_V_eq.
 Qed.
 
-(*
-Lemma seq_modifiedV_bot_eq : modifiedV f'_bot f_bot =i seq_modifiedV_bot.
-Proof.
-by move => x; rewrite inE mem_filter mem_enum andb_idr.
-Qed.
-*)
-
-(*
-Lemma seq_modifiedV_sub_eq :
-  forall x,  \in 
-  modifiedV_sub f'_top f'_bot g_top f_top f_bot ps =i seq_modifiedV_sub.
-
-
-Lemma V_sub_V_seq_sub_eq :
-  forall v : V,  Sub v \in (sig_finType (P_V_sub f'_top g_top f_top ps)).
-       v \in V_seq_sub.
-
-  (sig_finType (P_V_sub f'_top g_top f_top ps)) =i V_seq_sub.
-*)
-
 Variable g_bot : rel V.
 
 Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel g_bot_rev.
 
-(*
-Lemma seq_impactedV_sub :
-  impactedV_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impactedV_sub.
- *)
+Hypothesis f_top_bot_ps : forall (u : U),
+ f_top u = f'_top (val u) -> forall (v : V), v \in ps u -> f_bot v = f'_bot (val v).
 
-(*Lemma seq_impacted_fresh_sub_uniq : *)
+Lemma seq_modifiedV_sub_eq : forall z,
+ (val z \in seq_modifiedV_sub) =
+ (z \in modifiedV_sub f'_top f'_bot g_top f_top f_bot ps).
+Proof.
+move => z.
+apply/idP/idP.
+- rewrite mem_filter.
+  move/andP => [Hz Ha].
+  rewrite inE.
+  move/flattenP: Ha => [x Hx] Hzx.
+  apply/andP; split => //.
+  apply/bigcupP.
+  move/mapP: Hx => [u Hu] Hxu.
+  exists u; last by rewrite -p_ps_eq -Hxu.
+  by rewrite seq_modifiedU_eq.
+- move => Hz.
+  rewrite mem_filter.
+  apply/andP.  
+  move: Hz.
+  rewrite inE.
+  move/andP => [Hz Hf].
+  split => //.
+  move/bigcupP: Hz => [u Hu] Huz.
+  apply/flattenP.  
+  exists (p u); last by rewrite p_ps_eq.
+  apply/mapP.
+  exists u => //.
+  by rewrite -seq_modifiedU_eq.
+Qed.
+
+Lemma seq_impactedVV'_sub_eq :
+  impactedVV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impactedVV'_sub.
+Proof.
+move => x.
+apply/idP/idP.
+- move/imsetP => [y Hy] Hyx.
+  apply/mapP.
+  exists (val y) => //.
+  move/impactedP: Hy => [z Hz] Hyz.
+  apply/clos_botP.
+  exists (val z); first by rewrite seq_modifiedV_sub_eq.
+  move: Hyz.
+  move/connect_rev => /=.
+  (*move/connectP => [s Hs] Hzs.
+  apply/connectP.
+  exists (map val s). *)
+  by admit.
+- move/mapP => [y Hy] Hyx.
+  move/clos_botP: Hy => [v Hv] Hc.
+  apply/imsetP.   
+  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) v).
+  destruct H_sp; last first.
+    case/negP: i.
+    rewrite /P_V_sub.
+    move: Hv.
+    rewrite mem_filter.
+    move/andP => [Hf Hs].
+    have Hv: v \in modifiedV f'_bot f_bot by rewrite inE.
+    suff Hsuff: v \in pmodified_sub_V f'_top f_top ps.
+      move/bigcupP: Hsuff => [u Hu] Huv.
+      apply/bigcupP.
+      exists u => //.
+      apply/impactedP.
+      by exists u.
+    move: Hv.
+    by apply modifiedV_pmodified_sub_V.
+  rewrite -e in Hv.  
+  have H_sp := (insubP (sig_subFinType (P_V_sub f'_top g_top f_top ps)) y).
+  destruct H_sp; last first.
+    case/negP: i0.
+    rewrite /P_V_sub.
+    rewrite seq_modifiedV_sub_eq in Hv.
+    suff Hsuff: y \in impacted g_bot^-1 (modifiedV f'_bot f_bot).    
+      apply/bigcupP.
+      
+    (*
+    suff Hsuff: y \in impactedV_sub f'_top f'_bot g_top g_bot f_top f_bot ps.
+    
+    apply/bigcupP.
+    
+    move: Hv.
+    rewrite mem_filter.
+    move/andP => [Hf Hs].
+    suff Hsuff: y \in seq_pimpacted_V by rewrite seq_pimpacted_V_eq.
+    
+    
+    apply/bigcupP.
+
+    
+  rewrite -e in Hv.
+  rewrite seq_modifiedV_sub_eq in Hv.
+  exists u; last first.
+  rewrite e.*)
+Admitted.
+
+Lemma seq_impactedV'_sub_eq :
+  impactedV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impacted_fresh_sub.
+Proof.
+move => x.
+apply/idP/idP.
+- rewrite mem_cat.
+  case/setUP => Hx.
+  * apply/orP; left.
+    by rewrite -seq_impactedVV'_sub_eq.
+  * apply/orP; right.
+    by rewrite -seq_freshV'_eq.
+- rewrite mem_cat.
+  move/orP; case => Hx.
+  * apply/setUP.
+    left.
+    by rewrite seq_impactedVV'_sub_eq.
+  * apply/setUP.
+    right.
+    by rewrite seq_freshV'_eq.
+Qed.
+
+Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
+ u <> u' -> g_bot v v' -> v \in ps u -> v' \in ps u' -> g_top u u'.
+
+Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
+
+Lemma seq_impactedV'_sub_correct :
+  seq_impacted_fresh_sub =i impactedV' f'_bot f_bot g_bot.
+Proof.
+move => x.
+apply/idP/idP.
+- rewrite -seq_impactedV'_sub_eq.
+  by rewrite impactedV'_sub_eq //.
+- rewrite -seq_impactedV'_sub_eq.
+  by rewrite impactedV'_sub_eq //.
+Qed.
 
 End CheckedSeqHierarchical.
