@@ -26,6 +26,16 @@ modified.native: $(IMPACTED) $(CHANGE) ocaml/modified.ml
 	perl scripts/remove_module.pl ocaml/impacted
 	$(OCAMLBUILD_JSON) modified.native
 
+hierarchicalignore.native: $(IMPACTED) $(CHANGE) ocaml/hierarchicalignore.ml
+	perl scripts/remove_module.pl ocaml/impacted
+	$(OCAMLBUILD_JSON) hierarchicalignore.native
+
+ids.native: ocaml/ids.ml
+	$(OCAMLBUILD_JSON) ids.native
+
+neighbors.native: ocaml/neighbors.ml
+	$(OCAMLBUILD_JSON) neighbors.native
+
 $(IMPACTED):
 	+$(MAKE) -C ../.. extraction/impacted/$@
 
