@@ -8,7 +8,7 @@ Requirements
 
 Definitions and proofs:
 
-- [Coq 8.8 or 8.9](http://coq.inria.fr)
+- [Coq 8.8 or 8.9](https://coq.inria.fr)
 - [MathComp 1.7.0](https://math-comp.github.io/math-comp/) (`ssreflect` and `fingroup` suffice)
 
 Executable tool:
@@ -40,8 +40,7 @@ First install the Coq requirements as above, then install the OCaml requirements
 ```
 opam install ocamlbuild yojson extlib
 ```
-
-Then, to build the regular tool, run
+To build the regular tool, run
 ```
 make impacted
 ```
