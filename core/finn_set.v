@@ -262,6 +262,17 @@ move => x.
 by rewrite (seq_checkable_impacted_fresh_sub_correct _ UDFS.elts_srclosure'Pg VDFS.elts_srclosure'Pg g_top_grev p_ps_eq ps_partition g_bot_grev).
 Qed.
 
+Hypothesis p_uniq : forall u, uniq (p u).
+
+Lemma succs_checkable_impacted_fresh_uniq : uniq succs_checkable_impacted_fresh.
+Proof.
+apply: seq_checkable_impacted_fresh_sub_uniq => //.
+- exact: UDFS.elts_srclosure'Pg.
+- exact: VDFS.elts_srclosure'Pg.
+- move => sc s Hs.
+  exact: VDFS.elts_srclosure'_uniq.
+Qed.
+
 End FinnHierarchical.
 
 End OrdinalsHierarchicalCheckableImpacted.

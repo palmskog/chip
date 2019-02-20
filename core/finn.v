@@ -212,4 +212,16 @@ move => x.
 by rewrite (seq_checkable_impacted_fresh_sub_correct _ (@rclosure'Pg _) (@rclosure'Pg _) g_top_grev p_ps_eq ps_partition g_bot_grev).
 Qed.
 
+Hypothesis p_uniq : forall u, uniq (p u).
+
+Lemma succs_hierarchical_checkable_impacted_fresh_uniq :
+  uniq succs_hierarchical_checkable_impacted_fresh.
+Proof.
+apply: seq_checkable_impacted_fresh_sub_uniq => //.
+- exact: succs_closureP.
+- exact: succs_closureP.
+- move => s Hs.
+  exact: succs_closure_uniq.
+Qed.
+
 End FinnHierarchical.
