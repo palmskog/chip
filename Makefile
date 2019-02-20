@@ -18,10 +18,10 @@ clean: Makefile.coq
 	$(MAKE) -C extraction/impacted-rbt clean
 
 impacted:
-	+$(MAKE) -C extraction/impacted filtering.native filteringinv.native topfiltering.native
+	+$(MAKE) -C extraction/impacted filtering.native topfiltering.native hierarchical.native
 
 impacted-rbt:
-	+$(MAKE) -C extraction/impacted-rbt filtering.native filteringinv.native topfiltering.native
+	+$(MAKE) -C extraction/impacted-rbt filtering.native topfiltering.native hierarchical.native
 
 Makefile.coq: _CoqProject
 	coq_makefile -f _CoqProject -o Makefile.coq

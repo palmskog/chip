@@ -89,5 +89,6 @@ Implementation-related definitions and lemmas:
 - `core/close_dfs.v`: refined sequence-based transitive closure computation
 - `core/dfs_set.v`: refined transitive closure computation using MSet functor (to enable red-black trees)
 - `core/check_seq.v`: sequence-based change impact analysis definitions, optimized topological sorting using impact analysis
+- `core/check_seq_hierarchical.v`: sequence-based hierarchical change impact analysis definitions
 - `core/finn.v`: regular instantiation of sequence-based definitions for the ordinal finite type
 - `core/finn_set.v`: red-black tree instantiation of sequence-based definitions for the ordinal finite type
