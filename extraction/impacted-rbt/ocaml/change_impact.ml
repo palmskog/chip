@@ -63,7 +63,7 @@ let hierarchical_checkable_impacted_fresh
   in
   let module OHCI = OrdinalsHierarchicalCheckableImpacted (OrdsTop) (OrdsBot) in
   Obj.magic
-    (OHCI.succs_hierarchical_checkable_impacted_fresh
+    (OHCI.succs_checkable_impacted_fresh
        (Obj.magic top_successors)
        (Obj.magic bot_successors)
        (Obj.magic (fun x -> char_list_of_string (top_f_new x)))
