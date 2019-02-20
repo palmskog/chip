@@ -100,7 +100,7 @@ let () =
   let successors k = succs_arr.(k) in
   let f_new k = let (_,_,_,_,checksum) = new_idx_arr.(k) in checksum in
   let f_old k = let (_,_,_,checksum) = old_idx_arr.(k) in checksum in
-  let rnb k = let (_,_,_,checkable,_) = new_idx_arr.(k) in checkable in
+  let chk k = let (_,_,_,checkable,_) = new_idx_arr.(k) in checkable in
   let successors' k = succs'_arr.(k) in
 
   let tsorted =
@@ -108,7 +108,7 @@ let () =
       num_new num_old
       successors
       f_new f_old
-      rnb
+      chk
       successors'
   in
 
