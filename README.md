@@ -53,6 +53,10 @@ To try hierarchical change impact analysis, run:
 ```
 ./hierarchical.native test/new-hierarchical.json test/old-hierarchical.json
 ```
+To try topological sorting, run:
+```
+./topfiltering.native test/new-topsort.json test/old-topsort.json
+```
 
 To build the tool with red-black trees, run:
 ```
