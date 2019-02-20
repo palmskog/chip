@@ -381,4 +381,22 @@ apply/idP/idP.
   by rewrite impactedV'_sub_eq //.
 Qed.
 
+Lemma seq_checkable_impacted_fresh_sub_correct :
+  seq_checkable_impacted_fresh_sub =i
+  checkable_impactedV' f'_bot f_bot g_bot checkable'_bot.
+Proof.
+move => x.
+rewrite mem_filter.
+apply/idP/idP.
+- move/andP => [Hc Hx].
+  rewrite inE.
+  apply/andP; split => //.
+  by rewrite -seq_impactedV'_sub_correct.
+- rewrite inE.
+  move/andP => [Hc Hi].
+  apply/andP.
+  split => //.
+  by rewrite seq_impactedV'_sub_correct.
+Qed.
+
 End CheckedSeqHierarchical.

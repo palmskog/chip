@@ -8,7 +8,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq.
+Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq check_seq_hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -56,6 +56,8 @@ Variable f' : V' -> A.
 Variable f : V -> A.
 Variable checkable' : pred V'.
 
+(* defs *)
+
 Definition succs_closure := VDFS.elts_srclosure'.
 Definition succs_closureP := VDFS.elts_srclosure'Pg.
 Definition succs_closure_uniq := VDFS.elts_srclosure'_uniq.
@@ -71,6 +73,8 @@ Variable successors' : V' -> seq V'.
 
 Definition succs_ts :=
  ts_g'rev_imf_checkable_val f' f successors checkable' succs_closure tseq successors'.
+
+(* proofs *)
 
 Variable g : rel V.
 
@@ -241,32 +245,6 @@ Definition mset_pimpacted_V := foldl (fun s v => VSet.add v s) VSet.empty seq_pi
 
 Definition P_V_mset_sub v := VSet.mem v mset_pimpacted_V.
 Definition successors_bot_sub (v : V) := [seq v <- successors_bot v | P_V_mset_sub v].
-
-(*
-Local Notation V_mset_sub := (sig_finType P_V_mset_sub).
-
-Module V_mset_subFinType <: FinType.
-Definition T : finType := V_mset_sub.
-End V_mset_subFinType.
-
-Module V_mset_subFinOrdType <: FinOrdType V_mset_subFinType.
-Definition ordT : rel V_mset_sub := fun x y => subltn (val x) (val y).
-Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val (val x)).
-Definition trans_ordT : transitive ordT :=
- fun x y z => @trans_ltn_nat (val (val x)) (val (val y)) (val (val z)).
-Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
- fun x y => total_ltn_nat (val (val x)) (val (val y)).
-End V_mset_subFinOrdType.
-
-Module V_mset_subFinOrdUsualOrderedType <: FinUsualOrderedType V_mset_subFinType :=
- FinOrdUsualOrderedType V_mset_subFinType V_mset_subFinOrdType.
-Module V_mset_subSet <: MSetInterface.S :=
- MSetRBT.Make V_mset_subFinOrdUsualOrderedType.
-Module V_mset_subDFS := DFS V_mset_subFinType V_mset_subFinOrdUsualOrderedType V_mset_subSet.
-
-Definition successors_bot_sub (v : V_mset_sub) : seq V_mset_sub :=
-  pmap insub (successors_bot (val v)).
-*)
 
 Definition seq_modifiedV_sub := [seq v <- seq_pmodified_V | f_bot v != f'_bot (val v)].
 Definition seq_impactedV_sub := VDFS.elts_srclosure' successors_bot_sub seq_modifiedV_sub.

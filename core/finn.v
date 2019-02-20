@@ -174,25 +174,40 @@ Variable checkable'_bot : pred V'.
 
 Variable p : U -> seq V.
 
+(* defs *)
+
 Definition succs_hierarchical_checkable_impacted_fresh :=
   @seq_checkable_impacted_fresh_sub A_top A_bot _ _ f'_top f'_bot _ _ f_top f_bot successors_top successors_bot p checkable'_bot (@rclosure' _) (@rclosure' _).
 
-(*
-Variable successors'_top : U' -> seq U'.
+(* proofs *)
+
 Variable (g_top : rel U).
+
 Hypothesis g_top_grev : [rel x y | g_top y x] =2 grel successors_top.
-*)
 
 Variable (g_bot : rel V).
 
 Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel successors_bot.
 
-(*
+Variables (ps : U -> {set V}).
+
+Hypothesis p_ps_eq : forall u : U, p u =i ps u.
+
+Hypothesis ps_partition : partition (\bigcup_( u | u \in U ) [set ps u]) [set: V].
+
+Hypothesis f_top_bot_ps : forall (u : U),
+ f_top u = f'_top (val u) -> forall (v : V), v \in ps u -> f_bot v = f'_bot (val v).
+
+Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
+ u <> u' -> g_bot v v' -> v \in ps u -> v' \in ps u' -> g_top u u'.
+
+Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
+
 Lemma succs_hierarchical_checkable_impacted_fresh_eq :
  checkable_impactedV' f'_bot f_bot g_bot checkable'_bot =i succs_hierarchical_checkable_impacted_fresh.
 Proof.
-exact: succs_closureP.
+move => x.
+by rewrite (seq_checkable_impacted_fresh_sub_correct _ (@rclosure'Pg _) (@rclosure'Pg _) g_top_grev p_ps_eq ps_partition g_bot_grev).
 Qed.
-*)
 
 End FinnHierarchical.
