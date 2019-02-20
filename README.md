@@ -45,9 +45,13 @@ Then, to build the regular tool, run
 ```
 make impacted
 ```
-To try the tool, go to `extraction/impacted` and run:
+To try plain change impact analysis, go to `extraction/impacted` and run:
 ```
 ./filtering.native test/new.json test/old.json
+```
+To try hierarchical change impact analysis, run:
+```
+./hierarchical.native test/new-hierarchical.json test/old-hierarchical.json
 ```
 
 To build the tool with red-black trees, run:
