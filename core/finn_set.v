@@ -8,7 +8,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import ordtype connect dfs_set string acyclic kosaraju topos check change check_seq check_seq_hierarchical.
+Require Import ordtype connect closure dfs_set string acyclic kosaraju topos check change check_seq hierarchical_sub check_seq_hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -215,6 +215,8 @@ Module VSet <: MSetInterface.S :=
  MSetRBT.Make VFinOrdUsualOrderedType.
 Module VDFS := DFS VFinType VFinOrdUsualOrderedType VSet.
 
+Module VSetF := Facts VSet.
+
 Section FinnHierarchical.
 
 Variable successors_top : U -> seq U.
@@ -230,8 +232,10 @@ Variable checkable'_bot : pred V'.
 
 Variable p : U -> seq V.
 
-Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
-Definition seq_impactedU := UDFS.elts_srclosure' successors_top seq_modifiedU.
+(* defs *)
+
+Definition succs_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
+Definition succs_impactedU := UDFS.elts_srclosure' successors_top succs_modifiedU.
 
 (*
 Definition seq_modifiedU' := [seq (val u) | u <- seq_modifiedU].
@@ -239,26 +243,104 @@ Definition seq_freshU' := [seq u <- enum U' | ~~ P_top u].
 Definition seq_modified_freshU' := seq_modifiedU' ++ seq_freshU'.
 *)
 
-Definition seq_pmodified_V := flatten [seq (p v) | v <- seq_modifiedU].
-Definition seq_pimpacted_V := flatten [seq (p v) | v <- seq_impactedU].
-Definition mset_pimpacted_V := foldl (fun s v => VSet.add v s) VSet.empty seq_pimpacted_V.
+Definition succs_pmodified_V := flatten [seq (p v) | v <- succs_modifiedU].
+Definition succs_pimpacted_V := flatten [seq (p v) | v <- succs_impactedU].
+Definition succs_mset_pimpacted_V := foldl (fun s v => VSet.add v s) VSet.empty succs_pimpacted_V.
 
-Definition P_V_mset_sub v := VSet.mem v mset_pimpacted_V.
-Definition successors_bot_sub (v : V) := [seq v <- successors_bot v | P_V_mset_sub v].
+Definition P_V_succs_mset_sub v := VSet.mem v succs_mset_pimpacted_V.
+Definition successors_bot_sub (v : V) := [seq v <- successors_bot v | P_V_succs_mset_sub v].
 
-Definition seq_modifiedV_sub := [seq v <- seq_pmodified_V | f_bot v != f'_bot (val v)].
-Definition seq_impactedV_sub := VDFS.elts_srclosure' successors_bot_sub seq_modifiedV_sub.
-Definition seq_impactedVV'_sub := [seq val v | v <- seq_impactedV_sub].
+Definition succs_modifiedV_sub := [seq v <- succs_pmodified_V | f_bot v != f'_bot (val v)].
+Definition succs_impactedV_sub := VDFS.elts_srclosure' successors_bot_sub succs_modifiedV_sub.
+Definition succs_impactedVV'_sub := [seq val v | v <- succs_impactedV_sub].
 
-Definition seq_freshV' := [seq v <- enum V' | ~~ P_bot v].
+Definition succs_freshV' := [seq v <- enum V' | ~~ P_bot v].
 
-Definition seq_impacted_fresh_sub := seq_impactedVV'_sub ++ seq_freshV'.
+Definition succs_impacted_fresh_sub := succs_impactedVV'_sub ++ succs_freshV'.
 
-Definition seq_checkable_impacted_fresh_sub :=
-  [seq v <- seq_impacted_fresh_sub | checkable'_bot v].
+Definition succs_checkable_impacted_fresh_sub :=
+  [seq v <- succs_impacted_fresh_sub | checkable'_bot v].
 
 Definition succs_hierarchical_checkable_impacted_fresh :=
-  seq_checkable_impacted_fresh_sub.
+  succs_checkable_impacted_fresh_sub.
+
+(* correctness *)
+
+Variable g_top : rel U.
+
+Hypothesis g_top_grev : [rel x y | g_top y x] =2 grel successors_top.
+
+Lemma succs_modifiedU_eq :
+  modifiedV f'_top f_top =i succs_modifiedU.
+Proof.
+move => x.
+by rewrite seq_modifiedU_eq.
+Qed.
+
+Lemma seq_impactedU_eq :
+  impacted g_top^-1 (modifiedV f'_top f_top) =i succs_impactedU.
+Proof.
+move => x.
+apply/impactedVP.
+case: ifP.
+- move/UDFS.elts_srclosure'Pg => [v Hv] Hc.
+  move: Hv.
+  rewrite -seq_modifiedU_eq => Hv.
+  exists v => //.
+  move/connectP: Hc => [p0 Hp] Hl.
+  apply/connectP.
+  exists p0 => //.
+  elim: p0 v Hp {Hv Hl} => //.
+  move => v p0 IH v0.
+  rewrite /=.
+  move/andP => [Hv Hp].
+  apply/andP.
+  split; last by apply: IH.
+  move: Hv.
+  have Hb := (g_top_grev v0 v).
+  rewrite /= in Hb.
+  by rewrite Hb.
+- move/negP => Hs.
+  move => [y Hy] Hc.
+  case: Hs.
+  apply/UDFS.elts_srclosure'Pg.
+  move: Hy.
+  rewrite seq_modifiedU_eq => Hy.  
+  exists y => //.
+  move/connectP: Hc => [p0 Hp0] Hl.
+  apply/connectP.
+  exists p0 => //.
+  elim: p0 y Hp0 {Hl Hy} => //.
+  move => v p0 IH v0.
+  rewrite /=.
+  move/andP => [Hv Hp].
+  apply/andP.
+  split; last by apply: IH.
+  move: Hv.
+  have Hb := (g_top_grev v0 v).
+  rewrite /= in Hb.
+  by rewrite Hb.
+Qed.
+
+Variables (ps : U -> {set V}).
+
+Hypothesis p_ps_eq : forall u : U, p u =i ps u.
+
+Hypothesis ps_partition : partition (\bigcup_( u | u \in U ) [set ps u]) [set: V].
+
+Lemma succs_pimpacted_V_eq :
+  pimpacted_sub_V f'_top g_top f_top ps =i succs_pimpacted_V.
+Proof.
+move => x.
+erewrite seq_pimpacted_V_eq => //.
+exact: UDFS.elts_srclosure'Pg.
+Qed.
+
+(*
+Lemma succs_mset_pimpacted_V_eq :
+ forall x, (VSet.mem x succs_mset_pimpacted_V) = (x \in succs_pimpacted_V).
+Proof.
+*)
 
 End FinnHierarchical.
 
