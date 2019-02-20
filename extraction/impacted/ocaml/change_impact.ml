@@ -49,7 +49,7 @@ let hierarchical_checkable_impacted_fresh
     bot_num_new bot_num_old bot_successors bot_f_new bot_f_old bot_chk
     partition =
   Obj.magic
-    (succs_hierarchical_checkable_impacted_fresh
+    (succs_checkable_impacted_fresh_sub
        top_num_new (top_num_old-1)
        (Obj.magic top_successors)
        (Obj.magic (fun x -> char_list_of_string (top_f_new x)))

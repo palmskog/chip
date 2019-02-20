@@ -230,7 +230,7 @@ Variable checkable'_bot : pred V'.
 
 Variable p : U -> seq V.
 
-Definition succs_checkable_impacted_fresh :=
+Definition succs_checkable_impacted_fresh_sub :=
   seq_checkable_impacted_fresh_sub f'_top f'_bot f_top f_bot successors_top successors_bot p checkable'_bot UDFS.elts_srclosure' VDFS.elts_srclosure'.
 
 Variable (g_top : rel U).
@@ -241,7 +241,7 @@ Variable g_bot : rel V.
 
 Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel successors_bot.
 
-Variables (ps : U -> {set V}).
+Variable (ps : U -> {set V}).
 
 Hypothesis p_ps_eq : forall u : U, p u =i ps u.
 
@@ -255,16 +255,16 @@ Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
 
 Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
 
-Lemma succs_checkable_impacted_fresh_eq :
-  checkable_impactedV' f'_bot f_bot g_bot checkable'_bot =i succs_checkable_impacted_fresh.
+Hypothesis p_uniq : forall u, uniq (p u).
+
+Lemma succs_checkable_impacted_fresh_sub_eq :
+  checkable_impactedV' f'_bot f_bot g_bot checkable'_bot =i succs_checkable_impacted_fresh_sub.
 Proof.
 move => x.
 by rewrite (seq_checkable_impacted_fresh_sub_correct _ UDFS.elts_srclosure'Pg VDFS.elts_srclosure'Pg g_top_grev p_ps_eq ps_partition g_bot_grev).
 Qed.
 
-Hypothesis p_uniq : forall u, uniq (p u).
-
-Lemma succs_checkable_impacted_fresh_uniq : uniq succs_checkable_impacted_fresh.
+Lemma succs_checkable_impacted_fresh_sub_uniq : uniq succs_checkable_impacted_fresh_sub.
 Proof.
 apply: seq_checkable_impacted_fresh_sub_uniq => //.
 - exact: UDFS.elts_srclosure'Pg.
