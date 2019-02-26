@@ -36,7 +36,7 @@ Variable (R : eqType).
 
 Variable (check : V' -> R).
 
-Variables (p : U -> {set V}).
+Variable (p : U -> {set V}).
 
 Hypothesis p_neq : forall (u u' : U), u <> u' -> p u <> p u'.
 
@@ -52,11 +52,11 @@ Definition pmodified_sub_V : {set V} := \bigcup_(u | u \in modifiedV f'_top f_to
 
 Definition pimpacted_sub_V : {set V} := pimpacted_V f'_top g_top f_top p.
 
-Definition P_V_sub v := v \in pimpacted_sub_V.
+Definition P_V_sub : pred V := fun v => v \in pimpacted_sub_V.
 
-Local Notation V_sub := (sig_finType P_V_sub).
+Local Notation V_sub := ((sig_finType P_V_sub) : finType).
 
-Local Notation g_bot_sub := [rel x y : V_sub | g_bot (val x) (val y)].
+Local Notation g_bot_sub := ([rel x y : V_sub | g_bot (val x) (val y)] : rel V_sub).
 
 Definition modifiedV_sub :=
  [set v : V_sub | val v \in pmodified_sub_V & f_bot (val v) != f'_bot (val (val v))].

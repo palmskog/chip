@@ -3,11 +3,15 @@
 	{ "uri": "/home/user/projects/chip/examples/st/ListUtil.v",
 	  "id": 3955365859,
 	  "checkable": true,
+	  "neighbors": [],
+	  "contents": [3345550460,2461010471,3728870587,2163935719],
 	  "checksum": "60e8a717"
 	},
 	{ "uri": "/home/user/projects/chip/examples/st/Dedup.v",
 	  "id": 2758678171,
 	  "checkable": true,
+	  "neighbors": [3955365859],
+	  "contents": [2433485337,591398152,2138507738],
 	  "checksum":"62f7cfdd"
 	}
     ],

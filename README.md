@@ -86,6 +86,8 @@ Core definitions and lemmas:
 - `core/hierarchical_correct.v`: correctness proofs for overapproximation strategy
 - `core/hierarchical_sub.v`: compositional strategy for change impact analysis in hierarchical systems
 - `core/hierarchical_sub_correct.v`: correctness proofs for compositional strategy
+- `core/hierarchical_sub_pt.v`: improved hierarchical compositional strategy using partition of new vertices
+- `core/hierarchical_sub_pt_correct.v`: correctness proofs for improved compositional strategy
 - `core/acyclic.v`: definition of and basic lemmas for acyclicity, parameterized acyclicity checker
 - `core/kosaraju_acyclic.v`: acyclicity checking based on Kosaraju's algorithm
 - `core/tarjan_acyclic.v`: acyclicity checking based on Tarjan's algorithm

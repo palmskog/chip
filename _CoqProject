@@ -31,6 +31,8 @@ core/hierarchical.v
 core/hierarchical_correct.v
 core/hierarchical_sub.v
 core/hierarchical_sub_correct.v
+core/hierarchical_sub_pt.v
+core/hierarchical_sub_pt_correct.v
 core/check_seq_hierarchical.v
 extraction/impacted/coq/extract_impacted.v
 extraction/impacted-rbt/coq/extract_impacted_rbt.v
