@@ -350,7 +350,7 @@ apply/idP/idP.
     by apply connect_rev_v_u.
 Qed.
 
-Lemma seq_impactedV'_sub_eq :
+Lemma seq_impacted_fresh_sub_eq :
   impactedV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impacted_fresh_sub.
 Proof.
 move => x.
@@ -371,14 +371,14 @@ apply/idP/idP.
     by rewrite seq_freshV'_eq.
 Qed.
 
-Lemma seq_impactedV'_sub_correct :
+Lemma seq_impacted_fresh_sub_correct :
   seq_impacted_fresh_sub =i impactedV' f'_bot f_bot g_bot.
 Proof.
 move => x.
 apply/idP/idP.
-- rewrite -seq_impactedV'_sub_eq.
+- rewrite -seq_impacted_fresh_sub_eq.
   by rewrite impactedV'_sub_eq //.
-- rewrite -seq_impactedV'_sub_eq.
+- rewrite -seq_impacted_fresh_sub_eq.
   by rewrite impactedV'_sub_eq //.
 Qed.
 
@@ -392,12 +392,12 @@ apply/idP/idP.
 - move/andP => [Hc Hx].
   rewrite inE.
   apply/andP; split => //.
-  by rewrite -seq_impactedV'_sub_correct.
+  by rewrite -seq_impacted_fresh_sub_correct.
 - rewrite inE.
   move/andP => [Hc Hi].
   apply/andP.
   split => //.
-  by rewrite seq_impactedV'_sub_correct.
+  by rewrite seq_impacted_fresh_sub_correct.
 Qed.
 
 Hypothesis clos_top_uniq : forall successors (s : seq U),

@@ -176,6 +176,12 @@ Variable checkable'_bot : pred V'.
 
 Variable p : U -> seq V.
 
+Definition succs_modified_sub : seq _ :=
+  seq_modifiedV_sub f'_top f'_bot f_top f_bot p.
+
+Definition succs_impacted_fresh_sub :=
+  seq_impacted_fresh_sub f'_top f'_bot f_top f_bot successors_top successors_bot p (@rclosure' _) (@rclosure' _).
+
 Definition succs_checkable_impacted_fresh_sub :=
   seq_checkable_impacted_fresh_sub f'_top f'_bot f_top f_bot successors_top successors_bot p checkable'_bot (@rclosure' _) (@rclosure' _).
 
@@ -203,11 +209,28 @@ Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
 
 Hypothesis p_uniq : forall u, uniq (p u).
 
+Lemma succs_impacted_fresh_sub_eq :
+  impactedV' f'_bot f_bot g_bot =i succs_impacted_fresh_sub.
+Proof.
+move => x.
+by rewrite (seq_impacted_fresh_sub_correct (@rclosure'Pg _) (@rclosure'Pg _) g_top_grev p_ps_eq ps_partition g_bot_grev). 
+Qed.
+
 Lemma succs_checkable_impacted_fresh_sub_eq :
   checkable_impactedV' f'_bot f_bot g_bot checkable'_bot =i succs_checkable_impacted_fresh_sub.
 Proof.
 move => x.
 by rewrite (seq_checkable_impacted_fresh_sub_correct _ (@rclosure'Pg _) (@rclosure'Pg _) g_top_grev p_ps_eq ps_partition g_bot_grev).
+Qed.
+
+Lemma succs_impacted_fresh_sub_uniq :
+  uniq succs_impacted_fresh_sub.
+Proof.
+apply: seq_impacted_fresh_sub_uniq => //.
+- exact: succs_closureP.
+- exact: succs_closureP.
+- move => s Hs.
+  exact: succs_closure_uniq.
 Qed.
 
 Lemma succs_checkable_impacted_fresh_sub_uniq :

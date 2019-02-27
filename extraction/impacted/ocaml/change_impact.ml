@@ -44,6 +44,22 @@ let topsort num_new num_old successors f_new f_old chk successors' =
        chk
        (Obj.magic successors'))
 
+let hierarchical_impacted_fresh
+    top_num_new top_num_old top_successors top_f_new top_f_old
+    bot_num_new bot_num_old bot_successors bot_f_new bot_f_old
+    partition =
+  Obj.magic
+    (succs_impacted_fresh_sub
+       top_num_new (top_num_old-1)
+       (Obj.magic top_successors)
+       (Obj.magic (fun x -> char_list_of_string (top_f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (top_f_old x)))
+       bot_num_new (bot_num_old-1)
+       (Obj.magic bot_successors)
+       (Obj.magic (fun x -> char_list_of_string (bot_f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (bot_f_old x)))
+       (Obj.magic partition))
+
 let hierarchical_checkable_impacted_fresh
     top_num_new top_num_old top_successors top_f_new top_f_old
     bot_num_new bot_num_old bot_successors bot_f_new bot_f_old bot_chk
