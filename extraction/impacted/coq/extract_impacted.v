@@ -15,6 +15,7 @@ Extract Inlined Constant eqn => "(=)".
 Extract Inlined Constant leq => "(<=)".
 Extract Inlined Constant filter => "ExtLib.List.filter".
 Extract Inlined Constant cat => "ExtLib.List.append".
+Extract Inlined Constant flatten => "ExtLib.List.flatten".
 Extract Inlined Constant map => "ExtLib.List.map".
 Extract Inlined Constant foldl => "ExtLib.List.fold_left".
 Extract Inlined Constant foldr => "(fun a b c -> ExtLib.List.fold_right a c b)".

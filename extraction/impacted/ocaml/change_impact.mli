@@ -41,7 +41,7 @@ val hierarchical_impacted_fresh :
   (int -> string) ->
   (int -> string) ->
   (int -> int list) -> (* partition *)
-  int list    
+  int list
 
 val hierarchical_checkable_impacted_fresh :
   int -> int -> (* top *)
