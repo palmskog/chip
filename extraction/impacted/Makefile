@@ -38,6 +38,10 @@ hierarchicalignoreimpacted.native: $(IMPACTED) $(CHANGE) ocaml/hierarchicalignor
 	perl scripts/remove_module.pl ocaml/impacted
 	$(OCAMLBUILD_JSON) hierarchicalignoreimpacted.native
 
+hierarchicalpt.native: $(IMPACTED) $(CHANGE) ocaml/hierarchicalpt.ml
+	perl scripts/remove_module.pl ocaml/impacted
+	$(OCAMLBUILD_JSON) hierarchicalpt.native
+
 ids.native: ocaml/ids.ml
 	$(OCAMLBUILD_JSON) ids.native
 

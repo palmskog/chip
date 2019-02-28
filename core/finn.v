@@ -175,6 +175,7 @@ Variable f_bot : V -> A_bot.
 Variable checkable'_bot : pred V'.
 
 Variable p : U -> seq V.
+Variable p' : U' -> seq V'.
 
 Definition succs_modified_sub : seq _ :=
   seq_modifiedV_sub f'_top f'_bot f_top f_bot p.
@@ -185,6 +186,12 @@ Definition succs_impacted_fresh_sub :=
 Definition succs_checkable_impacted_fresh_sub :=
   seq_checkable_impacted_fresh_sub f'_top f'_bot f_top f_bot successors_top successors_bot p checkable'_bot (@rclosure' _) (@rclosure' _).
 
+Definition succs_impacted_fresh_sub_pt :=
+  seq_impacted_fresh_sub_pt f'_top f'_bot f_top f_bot successors_top successors_bot p p' (@rclosure' _) (@rclosure' _).
+
+Definition succs_checkable_impacted_fresh_sub_pt :=
+  seq_checkable_impacted_fresh_sub_pt f'_top f'_bot f_top f_bot successors_top successors_bot p p' checkable'_bot (@rclosure' _) (@rclosure' _).
+
 Variable (g_top : rel U).
 
 Hypothesis g_top_grev : [rel x y | g_top y x] =2 grel successors_top.
@@ -193,11 +200,17 @@ Variable (g_bot : rel V).
 
 Hypothesis g_bot_grev : [rel x y | g_bot y x] =2 grel successors_bot.
 
-Variables (ps : U -> {set V}).
+Variable (ps : U -> {set V}).
 
 Hypothesis p_ps_eq : forall u : U, p u =i ps u.
 
 Hypothesis ps_partition : partition (\bigcup_( u | u \in U ) [set ps u]) [set: V].
+
+Variable (ps' : U' -> {set V'}).
+
+Hypothesis p'_ps'_eq : forall u : U', p' u =i ps' u.
+
+Hypothesis ps'_partition : partition (\bigcup_( u | u \in U' ) [set ps' u]) [set: V'].
 
 Hypothesis f_top_bot_ps : forall (u : U),
  f_top u = f'_top (val u) -> forall (v : V), v \in ps u -> f_bot v = f'_bot (val v).

@@ -2,7 +2,7 @@ From mathcomp
 Require Import all_ssreflect.
 
 From chip
-Require Import extra connect closure check check_seq change hierarchical hierarchical_sub hierarchical_sub_correct tarjan_acyclic.
+Require Import extra connect closure check check_seq change hierarchical hierarchical_sub hierarchical_sub_pt hierarchical_sub_correct hierarchical_sub_pt_correct tarjan_acyclic.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -30,6 +30,8 @@ Variable g_bot_rev : V -> seq V.
 
 Variable p : U -> seq V.
 
+Variable p' : U' -> seq V'.
+
 Variable (checkable'_bot : pred V').
 
 Variable clos_top : (U -> seq U) -> seq U -> seq U.
@@ -50,9 +52,13 @@ Hypothesis clos_botP : forall successors (s : seq V) (x : V),
 
 Definition seq_modifiedU := [seq u <- enum U | f_top u != f'_top (val u)].
 Definition seq_impactedU := clos_top g_top_rev seq_modifiedU.
+Definition seq_freshU' := [seq u <- enum U' | ~~ P_top u].
 
-Definition seq_pmodified_V := flatten [seq (p v) | v <- seq_modifiedU].
-Definition seq_pimpacted_V := flatten [seq (p v) | v <- seq_impactedU].
+Definition seq_pmodified_V := flatten [seq (p u) | u <- seq_modifiedU].
+Definition seq_pimpacted_V := flatten [seq (p u) | u <- seq_impactedU].
+
+Definition seq_pfreshV' :=
+  flatten [seq (p' u) | u <- seq_freshU'] ++ flatten [seq (p' (val u)) | u <- seq_modifiedU].
 
 Definition P_V_seq_sub v := v \in seq_pimpacted_V.
 Definition g_bot_rev_sub (v : V) := [seq v <- g_bot_rev v | P_V_seq_sub v].
@@ -62,11 +68,15 @@ Definition seq_impactedV_sub := clos_bot g_bot_rev_sub seq_modifiedV_sub.
 Definition seq_impactedVV'_sub := [seq val v | v <- seq_impactedV_sub].
 
 Definition seq_freshV' := [seq v <- enum V' | ~~ P_bot v].
+Definition seq_freshV'_sub := [seq v <- seq_pfreshV' | ~~ P_bot v].
 
 Definition seq_impacted_fresh_sub := seq_impactedVV'_sub ++ seq_freshV'.
-
 Definition seq_checkable_impacted_fresh_sub :=
   [seq v <- seq_impacted_fresh_sub | checkable'_bot v].
+
+Definition seq_impacted_fresh_sub_pt := seq_impactedVV'_sub ++ seq_freshV'_sub.
+Definition seq_checkable_impacted_fresh_sub_pt :=
+  [seq v <- seq_impacted_fresh_sub_pt | checkable'_bot v].
 
 (* proofs *)
 
@@ -125,6 +135,12 @@ case: ifP.
   by rewrite Hb.
 Qed.
 
+Lemma seq_freshU'_eq :
+  freshV' P_top =i seq_freshU'.
+Proof.
+by move => x; rewrite inE mem_filter mem_enum andb_idr.
+Qed.
+
 Variables (ps : U -> {set V}).
 
 Hypothesis p_ps_eq : forall u : U, p u =i ps u.
@@ -158,6 +174,19 @@ apply/idP/idP.
 - by rewrite seq_pimpacted_V_eq.
 - by rewrite seq_pimpacted_V_eq.
 Qed.
+
+Variables (ps' : U' -> {set V'}).
+
+Hypothesis p'_ps'_eq : forall u : U', p' u =i ps' u.
+
+Hypothesis ps'_partition : partition (\bigcup_( u | u \in U' ) [set ps' u]) [set: V'].
+
+(*
+Lemma seq_pfresh_V'_eq : pfreshV' f'_top f_top ps' =i seq_pfreshV'.
+Proof.
+move => x.
+apply/idP/idP.
+*)
 
 Variable g_bot : rel V.
 
