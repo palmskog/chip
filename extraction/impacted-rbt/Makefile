@@ -34,6 +34,14 @@ hierarchicalignoreimpacted.native: $(IMPACTEDRBT) $(CHANGE) ocaml/hierarchicalig
 	perl scripts/remove_module.pl ocaml/impacted_rbt
 	$(OCAMLBUILD_JSON) hierarchicalignoreimpacted.native
 
+hierarchicalignorept.native: $(IMPACTEDRBT) $(CHANGE) ocaml/hierarchicalignorept.ml
+	perl scripts/remove_module.pl ocaml/impacted_rbt
+	$(OCAMLBUILD_JSON) hierarchicalignorept.native
+
+hierarchicalignoreimpactedpt.native: $(IMPACTEDRBT) $(CHANGE) ocaml/hierarchicalignoreimpactedpt.ml
+	perl scripts/remove_module.pl ocaml/impacted_rbt
+	$(OCAMLBUILD_JSON) hierarchicalignoreimpactedpt.native
+
 $(IMPACTEDRBT):
 	+$(MAKE) -C ../.. extraction/impacted-rbt/$@
 

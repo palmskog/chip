@@ -72,6 +72,32 @@ let hierarchical_impacted_fresh
        (Obj.magic (fun x -> char_list_of_string (bot_f_old x)))
        (Obj.magic p))
 
+let hierarchical_impacted_fresh_pt
+    top_num_new top_num_old top_successors top_f_new top_f_old
+    bot_num_new bot_num_old bot_successors bot_f_new bot_f_old p p' =
+  let module OrdsTop =
+      struct
+        let n = top_num_new
+        let m' = top_num_old - 1
+      end
+  in
+  let module OrdsBot =
+      struct
+        let n = bot_num_new
+        let m' = bot_num_old - 1
+      end
+  in
+  let module OHCI = OrdinalsHierarchicalCheckableImpacted (OrdsTop) (OrdsBot) in
+  Obj.magic
+    (OHCI.succs_impacted_fresh_sub_pt
+       (Obj.magic top_successors)
+       (Obj.magic bot_successors)
+       (Obj.magic (fun x -> char_list_of_string (top_f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (top_f_old x)))
+       (Obj.magic (fun x -> char_list_of_string (bot_f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (bot_f_old x)))
+       (Obj.magic p) (Obj.magic p'))
+
 let hierarchical_checkable_impacted_fresh
     top_num_new top_num_old top_successors top_f_new top_f_old
     bot_num_new bot_num_old bot_successors bot_f_new bot_f_old bot_chk p =
@@ -98,3 +124,30 @@ let hierarchical_checkable_impacted_fresh
        (Obj.magic (fun x -> char_list_of_string (bot_f_old x)))
        bot_chk
        (Obj.magic p))
+
+let hierarchical_checkable_impacted_fresh_pt
+    top_num_new top_num_old top_successors top_f_new top_f_old
+    bot_num_new bot_num_old bot_successors bot_f_new bot_f_old bot_chk p p' =
+  let module OrdsTop =
+      struct
+        let n = top_num_new
+        let m' = top_num_old - 1
+      end
+  in
+  let module OrdsBot =
+      struct
+        let n = bot_num_new
+        let m' = bot_num_old - 1
+      end
+  in
+  let module OHCI = OrdinalsHierarchicalCheckableImpacted (OrdsTop) (OrdsBot) in
+  Obj.magic
+    (OHCI.succs_checkable_impacted_fresh_sub_pt
+       (Obj.magic top_successors)
+       (Obj.magic bot_successors)
+       (Obj.magic (fun x -> char_list_of_string (top_f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (top_f_old x)))
+       (Obj.magic (fun x -> char_list_of_string (bot_f_new x)))
+       (Obj.magic (fun x -> char_list_of_string (bot_f_old x)))
+       bot_chk
+       (Obj.magic p) (Obj.magic p'))
