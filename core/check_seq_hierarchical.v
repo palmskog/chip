@@ -181,12 +181,40 @@ Hypothesis p'_ps'_eq : forall u : U', p' u =i ps' u.
 
 Hypothesis ps'_partition : partition (\bigcup_( u | u \in U' ) [set ps' u]) [set: V'].
 
-(*
-Lemma seq_pfresh_V'_eq : pfreshV' f'_top f_top ps' =i seq_pfreshV'.
+Lemma seq_pfreshV'_eq : pfreshV' f'_top f_top ps' =i seq_pfreshV'.
 Proof.
 move => x.
 apply/idP/idP.
-*)
+- case/setUP => Hp; rewrite mem_cat; apply/orP.
+  * left.
+    apply/flattenP.
+    move/bigcupP: Hp => [u' Hu'] Hx.
+    exists (p' u').
+    + apply/mapP.
+      exists u' => //.
+      by rewrite -seq_freshU'_eq.
+    + by rewrite p'_ps'_eq.
+  * right.
+    apply/flattenP.
+    move/bigcupP: Hp => [u Hu] Hx.
+    exists (p' (val u)); last by rewrite p'_ps'_eq.
+    apply/mapP.
+    exists u => //.
+    by rewrite -seq_modifiedU_eq.
+- rewrite mem_cat; case/orP; move/flattenP => [vs Hvs] Hx.
+  * apply/setUP.
+    left.    
+    apply/bigcupP.
+    move/mapP: Hvs => [u Hu] Huv.
+    exists u; first by rewrite seq_freshU'_eq.
+    by rewrite -p'_ps'_eq -Huv.
+  * move/mapP: Hvs => [u Hu] Huv.
+    apply/setUP.
+    right.
+    apply/bigcupP.
+    exists u; first by rewrite seq_modifiedU_eq.
+    by rewrite -p'_ps'_eq -Huv.
+Qed.
 
 Variable g_bot : rel V.
 
@@ -296,6 +324,10 @@ Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
 
 (* ps is injective *)
 Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
+Hypothesis ps'_neq : forall (u u' : U'), u <> u' -> ps' u <> ps' u'.
+
+Hypothesis f_top_partition : forall (u : U),
+ f_top u = f'_top (val u) -> [set val v | v in ps u] = ps' (val u).
 
 Lemma seq_impactedVV'_sub_eq :
   impactedVV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impactedVV'_sub.
@@ -379,6 +411,12 @@ apply/idP/idP.
     by apply connect_rev_v_u.
 Qed.
 
+Lemma seq_freshV'_sub_eq :
+  freshV'_sub f'_top P_bot f_top ps' =i seq_freshV'_sub.
+Proof.
+by move => x; apply/idP/idP; rewrite inE mem_filter -seq_pfreshV'_eq andbC.
+Qed.
+
 Lemma seq_impacted_fresh_sub_eq :
   impactedV'_sub f'_top f'_bot g_top g_bot f_top f_bot ps =i seq_impacted_fresh_sub.
 Proof.
@@ -400,6 +438,31 @@ apply/idP/idP.
     by rewrite seq_freshV'_eq.
 Qed.
 
+Lemma seq_impacted_fresh_sub_pt_eq :
+  impactedV'_sub_pt f'_top f'_bot g_top g_bot f_top f_bot ps ps' =i
+  seq_impacted_fresh_sub_pt.
+Proof.
+move => x.
+apply/idP/idP.
+- case/setUP => Hx.
+  * rewrite mem_cat.
+    apply/orP.
+    left.
+    by rewrite -seq_impactedVV'_sub_eq.
+  * rewrite mem_cat.
+    apply/orP.
+    right.
+    by rewrite -seq_freshV'_sub_eq.
+- rewrite mem_cat.
+  case/orP => Hx.
+  * apply/setUP.
+    left.
+    by rewrite seq_impactedVV'_sub_eq.
+  * apply/setUP.
+    right.
+    by rewrite seq_freshV'_sub_eq.
+Qed.
+
 Lemma seq_impacted_fresh_sub_correct :
   seq_impacted_fresh_sub =i impactedV' f'_bot f_bot g_bot.
 Proof.
@@ -409,6 +472,17 @@ apply/idP/idP.
   by rewrite impactedV'_sub_eq //.
 - rewrite -seq_impacted_fresh_sub_eq.
   by rewrite impactedV'_sub_eq //.
+Qed.
+
+Lemma seq_impacted_fresh_sub_pt_correct :
+  seq_impacted_fresh_sub_pt =i impactedV' f'_bot f_bot g_bot.
+Proof.
+move => x.
+apply/idP/idP.
+- rewrite -seq_impacted_fresh_sub_pt_eq.
+  by rewrite impactedV'_sub_pt_eq //.
+- rewrite -seq_impacted_fresh_sub_pt_eq.
+  by rewrite impactedV'_sub_pt_eq //.
 Qed.
 
 Lemma seq_checkable_impacted_fresh_sub_correct :
@@ -429,6 +503,24 @@ apply/idP/idP.
   by rewrite seq_impacted_fresh_sub_correct.
 Qed.
 
+Lemma seq_checkable_impacted_fresh_sub_pt_correct :
+  seq_checkable_impacted_fresh_sub_pt =i
+  checkable_impactedV' f'_bot f_bot g_bot checkable'_bot.
+Proof.
+move => x.
+rewrite mem_filter.
+apply/idP/idP.
+- move/andP => [Hc Hx].
+  rewrite inE.
+  apply/andP; split => //.
+  by rewrite -seq_impacted_fresh_sub_pt_correct.
+- rewrite inE.
+  move/andP => [Hc Hi].
+  apply/andP.
+  split => //.
+  by rewrite seq_impacted_fresh_sub_pt_correct.
+Qed.
+
 Hypothesis clos_top_uniq : forall successors (s : seq U),
   uniq s -> uniq (clos_top successors s).
 
@@ -436,6 +528,7 @@ Hypothesis clos_bot_uniq : forall successors (s : seq V),
   uniq s -> uniq (clos_bot successors s).
 
 Hypothesis p_uniq : forall u, uniq (p u).
+Hypothesis p'_uniq : forall u, uniq (p' u).
 
 Lemma seq_modifiedU_uniq : uniq seq_modifiedU.
 Proof.
@@ -573,6 +666,177 @@ apply uniq_flatten.
   by case.
 Qed.
 
+Lemma seq_freshU'_uniq : uniq seq_freshU'.
+Proof.
+rewrite filter_uniq //.
+exact: enum_uniq.
+Qed.
+
+Lemma seq_pfreshV'_uniq : uniq seq_pfreshV'.
+Proof.
+rewrite /seq_pfreshV'.
+rewrite cat_uniq.
+apply/andP.
+split; last (apply/andP; split).
+- apply uniq_flatten.
+  * move => s.
+    move/mapP => [u' Hu'] Hs.
+    rewrite Hs.
+    exact: p'_uniq.
+  * rewrite map_inj_in_uniq; first by apply seq_freshU'_uniq.
+    move => u u' Hu Hu' Hp.
+    case Huu: (u == u'); first by move/eqP: Huu.
+    move/eqP: Huu => Huu.
+    have Hpsn := ps'_neq Huu.
+    case: Hpsn.
+    apply/setP => x.    
+    by rewrite -2!p'_ps'_eq Hp.
+  * move => vs vs'.
+    move/mapP => [u Hu] Hup.
+    move/mapP => [u' Hu'] Hu'p.
+    move/eqP => Hv.
+    have Hp := ps'_partition.
+    move/andP: Hp => [Hcc Hp].
+    move/andP: Hp => [Htr H0].
+    move/trivIsetP: Htr => Htr.
+    have Hpu: ps' u \in \bigcup_(u in U') [set ps' u].
+      apply/bigcupP.
+      exists u => //=.
+      by rewrite in_set1.
+    have Hpu': ps' u' \in \bigcup_(u in U') [set ps' u].
+      apply/bigcupP.
+      exists u' => //=.
+      by rewrite in_set1.
+  have Hneq': ps' u != ps' u'.
+    apply/negP/negP/eqP => Hpp.
+    contradict Hpp.
+    apply: ps'_neq.
+    move => Huu.
+    case: Hv.
+    by rewrite Hup Hu'p Huu.
+  have Hpp := Htr _ _ Hpu Hpu' Hneq'.
+  rewrite Hup Hu'p.
+  rewrite disjoint_subset.
+  apply/subsetP.
+  move => x.
+  rewrite p'_ps'_eq => Hx.
+  rewrite inE.
+  apply/negP.
+  case => Hp.
+  have Hy: x \in p' u' by [].
+  move: Hy.
+  rewrite p'_ps'_eq => Hy.
+  move: Hpp.
+  rewrite disjoint_subset.
+  move/subsetP => Hs.
+  move/Hs: Hx.
+  rewrite inE.
+  move/negP.
+  by case.
+- apply/hasP => Hx.
+  move: Hx => [x Hx] Hxx.
+  move/flattenP: Hxx => [vs Hvs] Hxx.
+  move/flattenP: Hx => [vs' Hvs'] Hxx'.
+  move/mapP: Hvs => [u Hu] Hus.
+  move/mapP: Hvs' => [u' Hu'] Hus'.
+  move: Hxx Hxx'.
+  rewrite Hus Hus'.
+  move: Hu.
+  rewrite -seq_freshU'_eq inE => Hp Hx Hx'.
+  have Hxx: x \in ps' u by rewrite -p'_ps'_eq.
+  have Hxx': x \in ps' (val u') by rewrite -p'_ps'_eq.
+  suff Hsuff: u <> val u'.
+    have Hpp := ps'_partition.
+    move/andP: Hpp => [Hcc Hpp].
+    move/andP: Hpp => [Htr H0].
+    move/trivIsetP: Htr => Htr.
+    have Hpu: ps' u \in \bigcup_(u0 in U') [set ps' u0].
+      apply/bigcupP.
+      by exists u => //; last by rewrite inE.
+    have Hpu': ps' (val u') \in \bigcup_(u0 in U') [set ps' u0].
+      apply/bigcupP.
+      by exists (val u') => //; last by rewrite inE.
+    have Hneq': ps' u != ps' (val u').
+      apply/negP/negP/eqP => Hpp.
+      contradict Hpp.
+      exact: ps'_neq.
+    have Hpp := Htr _ _ Hpu Hpu' Hneq'.
+    move: Hpp.
+    rewrite disjoint_subset.
+    move/subsetP => Hpp.
+    have Hpx := Hpp x Hxx.
+    move: Hpx.
+    rewrite inE.
+    by case/negP.
+  move => Hu.
+  case/negP: Hp.
+  rewrite Hu.
+  by apply/valP.
+- apply uniq_flatten.
+  * move => vs.
+    move/mapP => [x Hx] Hv.
+    rewrite Hv.
+    exact: p'_uniq.
+  * rewrite map_inj_in_uniq; first by apply seq_modifiedU_uniq.
+    move => u u' Hu Hu' Hp.
+    case Huu: (u == u'); first by move/eqP: Huu.
+    move/eqP: Huu => Huu.
+    have Hpsn := ps_neq Huu.
+    have Huu': val u <> val u' by move => Hv; apply val_inj in Hv.
+    have Hps'n := ps'_neq Huu'.
+    case: Hps'n.
+    apply/setP => x.
+    by rewrite -2!p'_ps'_eq Hp.
+  * move => vs vs'.
+    move/mapP => [u Hu] Hup.
+    move/mapP => [u' Hu'] Hu'p.
+    move/eqP => Hv.
+    have Hp := ps'_partition.
+    move/andP: Hp => [Hcc Hp].
+    move/andP: Hp => [Htr H0].
+    move/trivIsetP: Htr => Htr.
+    have Hpu: ps' (val u) \in \bigcup_(u0 in U') [set ps' u0].
+      apply/bigcupP.
+      exists (val u) => //=.
+      by rewrite in_set1.
+    have Hpu': ps' (val u') \in \bigcup_(u0 in U') [set ps' u0].
+      apply/bigcupP.
+      exists (val u') => //=.
+      by rewrite in_set1.
+  have Hneq': ps' (val u) != ps' (val u').
+    apply/negP/negP/eqP => Hpp.
+    contradict Hpp.
+    apply: ps'_neq.
+    move => Huu.
+    case: Hv.
+    by rewrite Hup Hu'p Huu.
+  have Hpp := Htr _ _ Hpu Hpu' Hneq'.
+  rewrite Hup Hu'p.
+  rewrite disjoint_subset.
+  apply/subsetP.
+  move => x.
+  rewrite p'_ps'_eq => Hx.
+  rewrite inE.
+  apply/negP.
+  case => Hp.
+  have Hy: x \in p' (val u') by [].
+  move: Hy.
+  rewrite p'_ps'_eq => Hy.
+  move: Hpp.
+  rewrite disjoint_subset.
+  move/subsetP => Hs.
+  move/Hs: Hx.
+  rewrite inE.
+  move/negP.
+  by case.
+Qed.
+
+Lemma seq_freshV'_sub_uniq : uniq seq_freshV'_sub.
+Proof.
+rewrite filter_uniq //.
+exact: seq_pfreshV'_uniq.
+Qed.
+
 Lemma seq_modifiedV_sub_uniq : uniq seq_modifiedV_sub.
 Proof.
 rewrite filter_uniq //.
@@ -618,10 +882,37 @@ apply/andP; split.
   by apply impactedVV'_freshV'.
 Qed.
 
+Lemma seq_impacted_fresh_sub_pt_uniq : uniq seq_impacted_fresh_sub_pt.
+Proof.
+rewrite cat_uniq.
+apply/andP; split.
+- rewrite map_inj_uniq; last by apply val_inj.
+  apply clos_bot_uniq.
+  by apply seq_modifiedV_sub_uniq.
+- apply/andP; split; last by apply seq_freshV'_sub_uniq.
+  apply/negP.
+  case.
+  move/hasP.
+  move => /= [x Hx] Hm.
+  move: Hx Hm.
+  rewrite -seq_freshV'_sub_eq.
+  erewrite freshV'_sub_eq; eauto.
+  rewrite -seq_impactedVV'_sub_eq impactedVV'_sub_eq // => Hx Hm.
+  move/negP: Hx; case; apply/negP.
+  move: Hm.
+  by apply impactedVV'_freshV'.
+Qed.
+
 Lemma seq_checkable_impacted_fresh_sub_uniq : uniq seq_checkable_impacted_fresh_sub.
 Proof.
 rewrite filter_uniq //.
 exact: seq_impacted_fresh_sub_uniq.
+Qed.
+
+Lemma seq_checkable_impacted_fresh_sub_pt_uniq : uniq seq_checkable_impacted_fresh_sub_pt.
+Proof.
+rewrite filter_uniq //.
+exact: seq_impacted_fresh_sub_pt_uniq.
 Qed.
 
 End CheckedSeqHierarchical.

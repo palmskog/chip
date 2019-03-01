@@ -270,12 +270,19 @@ Hypothesis ps'_partition : partition (\bigcup_( u | u \in U' ) [set ps' u]) [set
 Hypothesis f_top_bot_ps : forall (u : U),
  f_top u = f'_top (val u) -> forall (v : V), v \in ps u -> f_bot v = f'_bot (val v).
 
+Hypothesis f_top_partition : forall (u : U),
+ f_top u = f'_top (val u) -> [set val v | v in ps u] = ps' (val u).
+
 Hypothesis g_bot_top_ps : forall (v v' : V) (u u' : U),
  u <> u' -> g_bot v v' -> v \in ps u -> v' \in ps u' -> g_top u u'.
 
 Hypothesis ps_neq : forall (u u' : U), u <> u' -> ps u <> ps u'.
 
+Hypothesis ps'_neq : forall (u u' : U'), u <> u' -> ps' u <> ps' u'.
+
 Hypothesis p_uniq : forall u, uniq (p u).
+
+Hypothesis p'_uniq : forall u, uniq (p' u).
 
 Lemma succs_impacted_fresh_sub_eq :
   impactedV' f'_bot f_bot g_bot =i succs_impacted_fresh_sub.
@@ -291,6 +298,20 @@ move => x.
 by rewrite (seq_checkable_impacted_fresh_sub_correct _ UDFS.elts_srclosure'Pg VDFS.elts_srclosure'Pg g_top_grev p_ps_eq ps_partition g_bot_grev).
 Qed.
 
+Lemma succs_impacted_fresh_sub_pt_eq :
+  impactedV' f'_bot f_bot g_bot =i succs_impacted_fresh_sub_pt.
+Proof.
+move => x.
+by rewrite (seq_impacted_fresh_sub_pt_correct UDFS.elts_srclosure'Pg VDFS.elts_srclosure'Pg g_top_grev p_ps_eq ps_partition p'_ps'_eq ps'_partition g_bot_grev) //.
+Qed.
+
+Lemma succs_checkable_impacted_fresh_sub_pt_eq :
+  checkable_impactedV' f'_bot f_bot g_bot checkable'_bot =i succs_checkable_impacted_fresh_sub_pt.
+Proof.
+move => x.
+by rewrite (seq_checkable_impacted_fresh_sub_pt_correct _ UDFS.elts_srclosure'Pg VDFS.elts_srclosure'Pg g_top_grev p_ps_eq ps_partition p'_ps'_eq ps'_partition g_bot_grev).
+Qed.
+
 Lemma succs_impacted_fresh_sub_uniq : uniq succs_impacted_fresh_sub.
 Proof.
 apply: seq_impacted_fresh_sub_uniq => //.
@@ -303,6 +324,24 @@ Qed.
 Lemma succs_checkable_impacted_fresh_sub_uniq : uniq succs_checkable_impacted_fresh_sub.
 Proof.
 apply: seq_checkable_impacted_fresh_sub_uniq => //.
+- exact: UDFS.elts_srclosure'Pg.
+- exact: VDFS.elts_srclosure'Pg.
+- move => sc s Hs.
+  exact: VDFS.elts_srclosure'_uniq.
+Qed.
+
+Lemma succs_impacted_fresh_sub_pt_uniq : uniq succs_impacted_fresh_sub_pt.
+Proof.
+apply: seq_impacted_fresh_sub_pt_uniq => //.
+- exact: UDFS.elts_srclosure'Pg.
+- exact: VDFS.elts_srclosure'Pg.
+- move => sc s Hs.
+  exact: VDFS.elts_srclosure'_uniq.  
+Qed.
+
+Lemma succs_checkable_impacted_fresh_sub_pt_uniq : uniq succs_checkable_impacted_fresh_sub_pt.
+Proof.
+apply: seq_checkable_impacted_fresh_sub_pt_uniq => //.
 - exact: UDFS.elts_srclosure'Pg.
 - exact: VDFS.elts_srclosure'Pg.
 - move => sc s Hs.
