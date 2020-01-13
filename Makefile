@@ -8,6 +8,9 @@ default: Makefile.coq
 quick: Makefile.coq
 	$(MAKE) -f Makefile.coq quick
 
+coqdoc: Makefile.coq
+	$(MAKE) -f Makefile.coq coqdoc
+
 install: Makefile.coq
 	$(MAKE) -f Makefile.coq install
 
@@ -29,7 +32,7 @@ Makefile.coq: _CoqProject
 $(IMPACTEDML) $(IMPACTEDRBTML): Makefile.coq
 	$(MAKE) -f Makefile.coq $@
 
-.PHONY: all default quick clean impacted $(IMPACTEDML) $(IMPACTEDRBTML)
+.PHONY: all default quick clean impacted coqdoc $(IMPACTEDML) $(IMPACTEDRBTML)
 
 .NOTPARALLEL: $(IMPACTEDML)
 .NOTPARALLEL: $(IMPACTEDRBTML)

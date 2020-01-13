@@ -2,6 +2,7 @@
 *.glob
 *.v.d
 *.aux
+docs
 Makefile.coq
 Makefile.coq.conf
 .coqdeps.d
