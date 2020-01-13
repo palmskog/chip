@@ -1,11 +1,12 @@
-opam-version: "1.2"
-version: "dev"
+opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
+version: "dev"
 
 homepage: "https://github.com/palmskog/chip"
-dev-repo: "https://github.com/palmskog/chip.git"
 bug-reports: "https://github.com/palmskog/chip/issues"
+dev-repo: "git+https://github.com/palmskog/chip.git"
 license: "MIT"
+synopsis: "Optimized certified tool for change impact analysis"
 
 build: [ make "-j%{jobs}%" "impacted-rbt" ]
 depends: [
@@ -18,5 +19,5 @@ depends: [
 ]
 
 authors: [
-  "Karl Palmskog <palmskog@gmail.com>"
+  "Karl Palmskog"
 ]

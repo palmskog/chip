@@ -66,7 +66,7 @@ and look in `extraction/impacted-rbt`.
 Coq files
 ---------
 
-Adapted and extended from work by [Cohen and Thery](https://github.com/CohenCyril/tarjan):
+Adapted and extended from work by [Cohen and Théry](https://github.com/CohenCyril/tarjan):
 
 - `core/extra.v`: auxiliary sequence lemmas
 - `core/connect.v`: auxiliary connect and topological sort definitions and lemmas
