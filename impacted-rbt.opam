@@ -8,8 +8,9 @@ dev-repo: "git+https://github.com/palmskog/chip.git"
 license: "MIT"
 synopsis: "Optimized certified tool for change impact analysis"
 
-build: [ make "-j%{jobs}%" "impacted-rbt" ]
+build: [make "-j%{jobs}%" "impacted-rbt"]
 depends: [
+  "ocaml" {>= "4.05" & < "4.10"}
   "coq" {>= "8.8" & < "8.10~"}
   "coq-mathcomp-ssreflect" {>= "1.7" & < "1.8"}
   "coq-mathcomp-fingroup"
