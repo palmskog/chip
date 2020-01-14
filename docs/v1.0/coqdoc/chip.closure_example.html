@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./">Project Page</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<h1 class="libtitle">chip.closure_example</h1>
+
+<div class="code">
+<span class="id" title="var">From</span> <span class="id" title="var">mathcomp</span><br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">all_ssreflect</span>.<br/>
+
+<br/>
+<span class="id" title="var">From</span> <span class="id" title="var">chip</span><br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="chip.extra.html#"><span class="id" title="library">extra</span></a> <a class="idref" href="chip.connect.html#"><span class="id" title="library">connect</span></a> <a class="idref" href="chip.acyclic.html#"><span class="id" title="library">acyclic</span></a> <a class="idref" href="chip.kosaraju_acyclic.html#"><span class="id" title="library">kosaraju_acyclic</span></a> <a class="idref" href="chip.closure.html#"><span class="id" title="library">closure</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <a name="food"><span class="id" title="inductive">food</span></a> :=<br/>
+| <a name="rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a><br/>
+| <a name="rigatoni"><span class="id" title="constructor">rigatoni</span></a><br/>
+| <a name="sauce"><span class="id" title="constructor">sauce</span></a><br/>
+| <a name="tomato_puree"><span class="id" title="constructor">tomato_puree</span></a><br/>
+| <a name="red_pepper"><span class="id" title="constructor">red_pepper</span></a><br/>
+| <a name="garlic"><span class="id" title="constructor">garlic</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="eq_food"><span class="id" title="definition">eq_food</span></a> (<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <a class="idref" href="chip.closure_example.html#food"><span class="id" title="inductive">food</span></a>) :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="chip.closure_example.html#f"><span class="id" title="variable">f</span></a>, <a class="idref" href="chip.closure_example.html#f'"><span class="id" title="variable">f'</span></a> <span class="id" title="keyword">with</span><br/>
+| <a class="idref" href="chip.closure_example.html#rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a>, <a class="idref" href="chip.closure_example.html#rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+| <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a>, <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+| <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a>, <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+| <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a>, <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+| <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a>, <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+| <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a>, <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a><br/>
+| <span class="id" title="var">_</span>, <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a><br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="eq_foodP"><span class="id" title="lemma">eq_foodP</span></a> : <span class="id" title="definition">Equality.axiom</span> <a class="idref" href="chip.closure_example.html#eq_food"><span class="id" title="definition">eq_food</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">case</span>.<br/>
+- <span class="id" title="tactic">case</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 2.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 1.<br/>
+- <span class="id" title="tactic">case</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 2.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 1.<br/>
+- <span class="id" title="tactic">case</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 2.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 1.<br/>
+- <span class="id" title="tactic">case</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 2.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 1.<br/>
+- <span class="id" title="tactic">case</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 2.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 1.<br/>
+- <span class="id" title="tactic">case</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 2.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span> 1.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_eqMixin"><span class="id" title="definition">food_eqMixin</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="abbreviation">EqMixin</span> <a class="idref" href="chip.closure_example.html#eq_foodP"><span class="id" title="lemma">eq_foodP</span></a>.<br/>
+<span class="id" title="keyword">Canonical</span> <span class="id" title="var">food_eqType</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="abbreviation">EqType</span> <a class="idref" href="chip.closure_example.html#food"><span class="id" title="inductive">food</span></a> <a class="idref" href="chip.closure_example.html#food_eqMixin"><span class="id" title="definition">food_eqMixin</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_pickle"><span class="id" title="definition">food_pickle</span></a> <span class="id" title="var">f</span> :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="chip.closure_example.html#f"><span class="id" title="variable">f</span></a> <span class="id" title="keyword">with</span><br/>
+| <a class="idref" href="chip.closure_example.html#rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a> =&gt; 0<br/>
+| <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a> =&gt; 1<br/>
+| <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a> =&gt; 2<br/>
+| <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a> =&gt; 3<br/>
+| <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a> =&gt; 4<br/>
+| <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a> =&gt; 5<br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_unpickle"><span class="id" title="definition">food_unpickle</span></a> <span class="id" title="var">n</span> :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="chip.closure_example.html#n"><span class="id" title="variable">n</span></a> <span class="id" title="keyword">with</span><br/>
+| 0 =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="chip.closure_example.html#rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a><br/>
+| 1 =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a><br/>
+| 2 =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a><br/>
+| 3 =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a><br/>
+| 4 =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a><br/>
+| 5 =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#Some"><span class="id" title="constructor">Some</span></a> <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a><br/>
+| <span class="id" title="var">_</span> =&gt; <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.Init.Datatypes.html#None"><span class="id" title="constructor">None</span></a><br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="food_pcancel"><span class="id" title="lemma">food_pcancel</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.ssr.ssrfun.html#pcancel"><span class="id" title="definition">pcancel</span></a> <a class="idref" href="chip.closure_example.html#food_pickle"><span class="id" title="definition">food_pickle</span></a> <a class="idref" href="chip.closure_example.html#food_unpickle"><span class="id" title="definition">food_unpickle</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">case</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_choiceMixin"><span class="id" title="definition">food_choiceMixin</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="lemma">PcanChoiceMixin</span> <a class="idref" href="chip.closure_example.html#food_pcancel"><span class="id" title="lemma">food_pcancel</span></a>.<br/>
+<span class="id" title="keyword">Canonical</span> <span class="id" title="var">food_choiceType</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="abbreviation">ChoiceType</span> <a class="idref" href="chip.closure_example.html#food"><span class="id" title="inductive">food</span></a> <a class="idref" href="chip.closure_example.html#food_choiceMixin"><span class="id" title="definition">food_choiceMixin</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_countMixin"><span class="id" title="definition">food_countMixin</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="abbreviation">CountMixin</span> <a class="idref" href="chip.closure_example.html#food_pcancel"><span class="id" title="lemma">food_pcancel</span></a>.<br/>
+<span class="id" title="keyword">Canonical</span> <span class="id" title="var">food_countType</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="abbreviation">CountType</span> <a class="idref" href="chip.closure_example.html#food"><span class="id" title="inductive">food</span></a> <a class="idref" href="chip.closure_example.html#food_countMixin"><span class="id" title="definition">food_countMixin</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_enum"><span class="id" title="definition">food_enum</span></a> :=<br/>
+<span class="id" title="notation">[::</span> <a class="idref" href="chip.closure_example.html#rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a><span class="id" title="notation">]</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="food_finite"><span class="id" title="lemma">food_finite</span></a> : <span class="id" title="definition">Finite.axiom</span> <a class="idref" href="chip.closure_example.html#food_enum"><span class="id" title="definition">food_enum</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">case</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_finMixin"><span class="id" title="definition">food_finMixin</span></a> :=<br/>
+&nbsp;&nbsp;<span class="id" title="abbreviation">FinMixin</span> <a class="idref" href="chip.closure_example.html#food_finite"><span class="id" title="lemma">food_finite</span></a>.<br/>
+<span class="id" title="keyword">Canonical</span> <span class="id" title="var">food_finType</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="abbreviation">FinType</span> <a class="idref" href="chip.closure_example.html#food"><span class="id" title="inductive">food</span></a> <a class="idref" href="chip.closure_example.html#food_finMixin"><span class="id" title="definition">food_finMixin</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_depends"><span class="id" title="definition">food_depends</span></a> <span class="id" title="var">f</span> :=<br/>
+<span class="id" title="keyword">match</span> <a class="idref" href="chip.closure_example.html#f"><span class="id" title="variable">f</span></a> <span class="id" title="keyword">with</span><br/>
+| <a class="idref" href="chip.closure_example.html#rigatoni_arrabiata"><span class="id" title="constructor">rigatoni_arrabiata</span></a> =&gt; <span class="id" title="notation">[::</span> <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a><span class="id" title="notation">]</span><br/>
+| <a class="idref" href="chip.closure_example.html#rigatoni"><span class="id" title="constructor">rigatoni</span></a> =&gt; <span class="id" title="notation">[::]</span><br/>
+| <a class="idref" href="chip.closure_example.html#sauce"><span class="id" title="constructor">sauce</span></a> =&gt; <span class="id" title="notation">[::</span> <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a><span class="id" title="notation">;</span> <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a><span class="id" title="notation">]</span><br/>
+| <a class="idref" href="chip.closure_example.html#tomato_puree"><span class="id" title="constructor">tomato_puree</span></a> =&gt; <span class="id" title="notation">[::]</span><br/>
+| <a class="idref" href="chip.closure_example.html#red_pepper"><span class="id" title="constructor">red_pepper</span></a> =&gt; <span class="id" title="notation">[::]</span><br/>
+| <a class="idref" href="chip.closure_example.html#garlic"><span class="id" title="constructor">garlic</span></a> =&gt; <span class="id" title="notation">[::]</span><br/>
+<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_rel"><span class="id" title="definition">food_rel</span></a> := <span class="id" title="definition">grel</span> <a class="idref" href="chip.closure_example.html#food_depends"><span class="id" title="definition">food_depends</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_acyclic"><span class="id" title="definition">food_acyclic</span></a> := <a class="idref" href="chip.kosaraju_acyclic.html#kosaraju_acyclic"><span class="id" title="definition">kosaraju_acyclic</span></a> <a class="idref" href="chip.closure_example.html#food_depends"><span class="id" title="definition">food_depends</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="food_rel_rev"><span class="id" title="abbreviation">food_rel_rev</span></a> := <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.ssr.ssrbool.html#fea9f4d81fed4d4bd9309c8e510110f0"><span class="id" title="notation">[</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.ssr.ssrbool.html#fea9f4d81fed4d4bd9309c8e510110f0"><span class="id" title="notation">rel</span></a> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.ssr.ssrbool.html#fea9f4d81fed4d4bd9309c8e510110f0"><span class="id" title="notation">|</span></a> <a class="idref" href="chip.closure_example.html#food_rel"><span class="id" title="definition">food_rel</span></a> <a class="idref" href="chip.closure_example.html#y"><span class="id" title="variable">y</span></a> <a class="idref" href="chip.closure_example.html#x"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/distrib/V8.9.1/stdlib//Coq.ssr.ssrbool.html#fea9f4d81fed4d4bd9309c8e510110f0"><span class="id" title="notation">]</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="food_rev_impacted"><span class="id" title="definition">food_rev_impacted</span></a> := <a class="idref" href="chip.closure.html#impacted"><span class="id" title="definition">impacted</span></a> <a class="idref" href="chip.closure_example.html#food_rel_rev"><span class="id" title="abbreviation">food_rel_rev</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>
