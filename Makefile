@@ -32,6 +32,9 @@ Makefile.coq: _CoqProject
 $(IMPACTEDML) $(IMPACTEDRBTML): Makefile.coq
 	$(MAKE) -f Makefile.coq $@
 
+resources/index.html: resources/index.md
+	pandoc -s -o $@ $<
+
 .PHONY: all default quick clean impacted coqdoc $(IMPACTEDML) $(IMPACTEDRBTML)
 
 .NOTPARALLEL: $(IMPACTEDML)
