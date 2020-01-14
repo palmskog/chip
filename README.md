@@ -57,8 +57,8 @@ To build the optimized tool:
 ```
 make impacted-rbt
 ```
-and look in `extraction/impacted-rbt`. The programs and arguments
-are the same as above.
+and look in `extraction/impacted-rbt`. The programs and command-line
+options are the same as above.
 
 ## Files
 
