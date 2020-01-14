@@ -1,25 +1,22 @@
-Chip
-====
+# Chip
 
 Change impact analysis in Coq and OCaml.
 
-Requirements
-------------
+## Requirements
 
 Definitions and proofs:
 
 - [Coq 8.8 or 8.9](https://coq.inria.fr)
 - [MathComp 1.7.0](https://math-comp.github.io/math-comp/) (`ssreflect` and `fingroup` suffice)
 
-Executable tool:
+Executable tools:
 
 - [OCaml 4.05.0 or later](https://ocaml.org)
 - [Ocamlbuild](https://github.com/ocaml/ocamlbuild)
 - [yojson](https://github.com/ocaml-community/yojson)
 - [extlib](https://github.com/ygrek/ocaml-extlib)
 
-Checking the definitions and proofs
------------------------------------
+## Checking the definitions and proofs
 
 We recommend installing the requirements via [OPAM](http://opam.ocaml.org/doc/Install.html):
 ```
@@ -33,8 +30,7 @@ make
 ```
 This will build the whole project and check all the proofs.
 
-Building the tool
------------------
+## Building the tools
 
 First install the Coq requirements as above, then install the OCaml requirements:
 ```
@@ -57,27 +53,27 @@ To try topological sorting, run:
 ./topfiltering.native test/new-topsort.json test/old-topsort.json
 ```
 
-To build the tool with red-black trees, run:
+To build the optimized tool:
 ```
 make impacted-rbt
 ```
-and look in `extraction/impacted-rbt`.
+and look in `extraction/impacted-rbt`. The programs and arguments
+are the same as above.
 
-Coq files
----------
+## Files
 
-Adapted and extended from work by [Cohen and Théry](https://github.com/CohenCyril/tarjan):
+Coq files adapted and extended from work by [Cohen and Théry](https://github.com/CohenCyril/tarjan):
 
 - `core/extra.v`: auxiliary sequence lemmas
 - `core/connect.v`: auxiliary connect and topological sort definitions and lemmas
 - `core/kosaraju.v`: implementation and correctness proof of Kosaraju's strongly connected components algorithm
 - `core/tarjan.v`: implementation and correctness proof of Tarjan's strongly connected components algorithm
 
-Adapted from work by [Nanevski et al.](https://github.com/imdea-software/fcsl-pcm):
+Coq file adapted from work by [Nanevski](https://github.com/imdea-software/fcsl-pcm):
 
 - `core/ordtype.v`: ordered type definition for the Mathematical Components library
 
-Core definitions and lemmas:
+Coq core definitions and lemmas:
 
 - `core/closure.v`: basic definition of transitive closures of sets
 - `core/check.v`: set-based definitions of dependency graphs, impactedness, and freshness
@@ -93,7 +89,7 @@ Core definitions and lemmas:
 - `core/tarjan_acyclic.v`: acyclicity checking based on Tarjan's algorithm
 - `core/topos.v`: definitions and lemmas on topological sorting of acyclic graphs
 
-Implementation-related definitions and lemmas:
+Coq implementation-related definitions and lemmas:
 
 - `core/close_dfs.v`: refined sequence-based transitive closure computation
 - `core/dfs_set.v`: refined transitive closure computation using MSet functor (to enable red-black trees)
@@ -101,3 +97,21 @@ Implementation-related definitions and lemmas:
 - `core/check_seq_hierarchical.v`: sequence-based hierarchical change impact analysis definitions
 - `core/finn.v`: regular instantiation of sequence-based definitions for the ordinal finite type
 - `core/finn_set.v`: red-black tree instantiation of sequence-based definitions for the ordinal finite type
+
+Key OCaml files for regular tool:
+
+- `extraction/impacted/ocaml/change_impact.mli`: interface to extracted code
+- `extraction/impacted/ocaml/change_impact.ml`: mapping to extracted functions
+- `extraction/impacted/ocaml/filtering.ml`: program for plain change impact analysis
+- `extraction/impacted/ocaml/topfiltering.ml`: program for topological sorting
+- `extraction/impacted/ocaml/hierarchical.ml`: program for two-level hierarchical change impact analysis
+- `extraction/impacted/ocaml/util.ml`: utility functions
+
+Key OCaml files for optimized tool:
+
+- `extraction/impacted-rbt/ocaml/change_impact.mli`: interface to extracted code
+- `extraction/impacted-rbt/ocaml/change_impact.ml`: mapping to extracted functions
+- `extraction/impacted-rbt/ocaml/filtering.ml`: program for plain change impact analysis
+- `extraction/impacted-rbt/ocaml/topfiltering.ml`: program for topological sorting
+- `extraction/impacted-rbt/ocaml/hierarchical.ml`: program for two-level hierarchical change impact analysis
+- `extraction/impacted-rbt/ocaml/util.ml`: utility functions
