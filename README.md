@@ -1,13 +1,15 @@
 # Chip
 
-Change impact analysis in Coq and OCaml.
+Change impact analysis in Coq and OCaml. The formalization and tool
+is described in the paper [Practical Machine-Checked Formalization of Change Impact Analysis](http://users.ece.utexas.edu/~gligoric/papers/PalmskogETAL20Chip.pdf),
+accepted to TACAS 2020.
 
 ## Requirements
 
 Definitions and proofs:
 
 - [Coq 8.8 or 8.9](https://coq.inria.fr)
-- [MathComp 1.7.0](https://math-comp.github.io/math-comp/) (`ssreflect` and `fingroup` suffice)
+- [MathComp 1.7.0](https://math-comp.github.io) (`ssreflect` and `fingroup` suffice)
 
 Executable tools:
 
@@ -21,7 +23,7 @@ Executable tools:
 We recommend installing the requirements via [OPAM](http://opam.ocaml.org/doc/Install.html):
 ```
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-mathcomp-ssreflect coq-mathcomp-fingroup
+opam install coq-mathcomp-ssreflect.1.7.0 coq-mathcomp-fingroup.1.7.0
 ```
 
 Then run:

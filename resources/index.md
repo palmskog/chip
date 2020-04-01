@@ -35,6 +35,10 @@ The coqdoc presentations of releases can be browsed online:
 
 - [v1.0](docs/v1.0/coqdoc/toc.html)
 
+The formalization and tool is described in the following publication(s):
+
+- [Practical Machine-Checked Formalization of Change Impact Analysis](http://users.ece.utexas.edu/~gligoric/papers/PalmskogETAL20Chip.pdf) doi:[10.1007/978-3-030-45237-7_9](https://doi.org/10.1007/978-3-030-45237-7_9)
+
 ## Help and contact
 
 - Report issues on [GitHub](https://github.com/palmskog/chip/issues)
