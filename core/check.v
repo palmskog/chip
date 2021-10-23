@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect close_dfs closure.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect close_dfs closure.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -169,7 +166,7 @@ move => HP.
 move/negP: HP.
 case.
 move: Hx.
-move/imsetP => [v [Hv Hx]].
+case/imsetP => v Hv Hx.
 rewrite Hx.
 exact: valP.
 Qed.

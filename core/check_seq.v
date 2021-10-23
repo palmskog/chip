@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra closure connect check change acyclic kosaraju topos.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra closure connect check change acyclic kosaraju topos.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -199,9 +196,7 @@ apply/andP; split.
   by apply seq_modifiedV_uniq.
 - apply/andP; split; last by rewrite filter_uniq // enum_uniq.
   apply/negP.
-  case.
-  move/hasP.
-  move => /= [x Hx] Hm.
+  case/hasP => /= [x Hx] Hm.
   move: Hx Hm.
   rewrite -seq_freshV'_eq -seq_impactedV'_eq => Hx Hm.
   move/negP: Hx; case; apply/negP.
@@ -236,8 +231,7 @@ apply: ts_connect_before; eauto.
 - exact: ts_all.
 - apply: acyclic_rev.
   move => z p Hp.
-  apply/negP.
-  case => Hcp.
+  apply/negP => Hcp.
   have Hpp: path g' z p.
     move: p z Hp {Hcp}.
     elim => //=.
@@ -245,7 +239,9 @@ apply: ts_connect_before; eauto.
     move/andP => [Hz Hp].
     have Hz': grel g'rev v z by [].
     move: Hz'.
-    rewrite -g'_g'rev /= => Hz'.
+    have Hgvz := g'_g'rev v z.
+    rewrite /= in Hgvz.
+    rewrite /= Hgvz /= => Hz'.
     apply/andP.
     split => //.
     exact: IH.
@@ -257,13 +253,17 @@ apply: ts_connect_before; eauto.
   apply/andP.
   have Hz': grel g'rev z (last z p) by [].
   move: Hz'.
-  rewrite -g'_g'rev /= => Hg.
+  have Hgzl := g'_g'rev z (last z p).
+  rewrite /= in Hgzl.
+  rewrite /= -Hgzl /= => Hg.
   by split.
 - apply/connect_rev.
   rewrite -(@eq_connect _ g') //.
   move => z0 z1.
   have ->: (z0 \in g'rev z1) = grel g'rev z1 z0 by [].
-  by rewrite -g'_g'rev.
+  have Hgz0z1 := g'_g'rev z1 z0.
+  rewrite /= in Hgz0z1.
+  by rewrite Hgz0z1.
 Qed.
 
 Definition ts_g'rev_checkable_imf :=
@@ -351,7 +351,11 @@ apply: ts_connect_before; eauto.
     rewrite /g'rev_imf => Hz.
     apply/andP.
     split; last by apply: IH.
-    suff Hsuff: grel g'rev (val v) (val z) by rewrite -g'_g'rev in Hsuff.
+    suff Hsuff: grel g'rev (val v) (val z). 
+      have Hgvz := g'_g'rev (val v) (val z).
+      rewrite /= in Hgvz.
+      rewrite /= in Hsuff.
+      by rewrite -Hgvz in Hsuff.
     move: Hz.
     rewrite /=.
     elim: (g'rev _) => //=.
@@ -383,7 +387,10 @@ apply: ts_connect_before; eauto.
   rewrite /g'rev_imf /= => Hl.
   suff Hsuff: grel g'rev (val z) (last (sval z) [seq sval v | v <- p]).
     move: Hsuff.
-    by rewrite -g'_g'rev.
+    have Hgr := g'_g'rev (val z) (last (sval z) [seq sval v | v <- p]).
+    rewrite /=.
+    rewrite /= in Hgr.
+    by rewrite Hgr.
   rewrite /=.
   move: Hl.
   set l := g'rev _.

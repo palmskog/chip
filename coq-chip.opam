@@ -1,3 +1,6 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
 opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
 version: "dev"
@@ -7,19 +10,18 @@ dev-repo: "git+https://github.com/palmskog/chip.git"
 bug-reports: "https://github.com/palmskog/chip/issues"
 license: "MIT"
 
-synopsis: "Formalization of change impact analysis"
+synopsis: "Coq formalization of change impact analysis"
 description: """
 Coq specification and executable functions
 for change impact analysis, as used in build systems
-and tools for regression test selection.
-"""
+and tools for regression test selection."""
 
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "coq" {>= "8.8" & < "8.10~"}
-  "coq-mathcomp-ssreflect" {>= "1.7" & < "1.8"}
-  "coq-mathcomp-fingroup"
+  "coq" {>= "8.13"}
+  "coq-mathcomp-ssreflect" {>= "1.12.0"}
+  "coq-mathcomp-fingroup" 
 ]
 
 tags: [

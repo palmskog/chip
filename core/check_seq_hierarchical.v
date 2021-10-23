@@ -1,8 +1,7 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect closure check check_seq change hierarchical hierarchical_sub hierarchical_sub_pt hierarchical_sub_correct hierarchical_sub_pt_correct tarjan_acyclic.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect closure check check_seq.
+From chip Require Import change hierarchical hierarchical_sub hierarchical_sub_pt.
+From chip Require Import hierarchical_sub_correct hierarchical_sub_pt_correct tarjan_acyclic.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -590,7 +589,7 @@ apply uniq_flatten.
   rewrite p_ps_eq => Hx.
   rewrite inE.
   apply/negP.
-  case => Hp.
+  move => Hp.
   have Hy: x \in p u' by [].
   move: Hy.
   rewrite p_ps_eq => Hy.
@@ -653,7 +652,7 @@ apply uniq_flatten.
   rewrite p_ps_eq => Hx.
   rewrite inE.
   apply/negP.
-  case => Hp.
+  move => Hp.
   have Hy: x \in p u' by [].
   move: Hy.
   rewrite p_ps_eq => Hy.
@@ -722,7 +721,7 @@ split; last (apply/andP; split).
   rewrite p'_ps'_eq => Hx.
   rewrite inE.
   apply/negP.
-  case => Hp.
+  move => Hp.
   have Hy: x \in p' u' by [].
   move: Hy.
   rewrite p'_ps'_eq => Hy.
@@ -818,7 +817,7 @@ split; last (apply/andP; split).
   rewrite p'_ps'_eq => Hx.
   rewrite inE.
   apply/negP.
-  case => Hp.
+  move => Hp.
   have Hy: x \in p' (val u') by [].
   move: Hy.
   rewrite p'_ps'_eq => Hy.
@@ -871,7 +870,6 @@ apply/andP; split.
   by apply seq_modifiedV_sub_uniq.
 - apply/andP; split; last by rewrite filter_uniq // enum_uniq.
   apply/negP.
-  case.
   move/hasP.
   move => /= [x Hx] Hm.
   move: Hx Hm.
@@ -891,7 +889,6 @@ apply/andP; split.
   by apply seq_modifiedV_sub_uniq.
 - apply/andP; split; last by apply seq_freshV'_sub_uniq.
   apply/negP.
-  case.
   move/hasP.
   move => /= [x Hx] Hm.
   move: Hx Hm.

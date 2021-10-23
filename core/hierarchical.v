@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect acyclic closure check change.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect acyclic closure check change.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -320,8 +317,8 @@ case Hfr: (u' \in freshV' P_top).
   rewrite -sub_freshV'.  
   move/negP/negPn.
   have H_sp := (insubP [subType of U] u').
-  destruct H_sp; last by case.
-  move => Hs.    
+  destruct H_sp; last by [].
+  move => Hs.
   apply/imsetP.
   exists u; last by [].
   apply/impactedVP.
@@ -366,7 +363,7 @@ case Hfr: (u' \in freshV' P_top).
   rewrite -sub_freshV'.
   move/negP/negPn.
   have H_sp := (insubP [subType of U] u').
-  destruct H_sp; last by case.
+  destruct H_sp; last by [].
   move => Hs.
   case Hu0: (u0 == u).
   * move: e.

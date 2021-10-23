@@ -1,5 +1,4 @@
-From mathcomp
-Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -141,12 +140,11 @@ exists (rcons p z).
 - by rewrite last_rcons.
 - rewrite disjoint_cons.
   apply/andP.
-  split => //.    
+  split => //.
   rewrite disjoint_has.
   elim: p Hd {Hp Hl} => //=.
   * move => Hd.
     apply/negP.
-    case.
     move/orP.
     case => //.
     move => Hz'.
