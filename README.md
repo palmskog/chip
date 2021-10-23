@@ -1,44 +1,61 @@
+<!---
+This file was generated from `meta.yml`, please do not edit manually.
+Follow the instructions on https://github.com/coq-community/templates to regenerate.
+--->
 # Chip
 
-Change impact analysis in Coq and OCaml. The formalization and tool
-is described in the paper [Practical Machine-Checked Formalization of Change Impact Analysis](http://users.ece.utexas.edu/~gligoric/papers/PalmskogETAL20Chip.pdf),
-accepted to TACAS 2020.
+[![Docker CI][docker-action-shield]][docker-action-link]
 
-## Requirements
+[docker-action-shield]: https://github.com/palmskog/chip/workflows/Docker%20CI/badge.svg?branch=master
+[docker-action-link]: https://github.com/palmskog/chip/actions?query=workflow:"Docker%20CI"
 
-Definitions and proofs:
 
-- [Coq 8.8 or 8.9](https://coq.inria.fr)
-- [MathComp 1.7.0](https://math-comp.github.io) (`ssreflect` and `fingroup` suffice)
 
-Executable tools:
+
+Coq specification and executable functions
+for change impact analysis, as used in build systems
+and tools for regression test selection.
+
+## Meta
+
+- Author(s):
+  - Cyril Cohen
+  - Aleksandar Nanevski
+  - Karl Palmskog
+  - Laurent Théry
+- License: [MIT license](LICENSE)
+- Compatible Coq versions: 8.13 or later
+- Additional dependencies:
+  - [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
+  - [MathComp fingroup](https://math-comp.github.io)
+- Coq namespace: `chip`
+- Related publication(s):
+  - [Practical Machine-Checked Formalization of Change Impact Analysis](http://users.ece.utexas.edu/~gligoric/papers/PalmskogETAL20Chip.pdf) doi:[10.1007/978-3-030-45237-7_9](https://doi.org/10.1007/978-3-030-45237-7_9)
+
+## Building the Coq formalization
+
+Make sure the Coq requirements are installed, then run:
+
+``` shell
+git clone https://github.com/palmskog/chip.git
+cd chip
+make   # or make -j <number-of-cores-on-your-machine>
+```
+
+## Building and running the executable tools
+
+The executable tools have the following additional OCaml requirements:
 
 - [OCaml 4.05.0 or later](https://ocaml.org)
 - [Ocamlbuild](https://github.com/ocaml/ocamlbuild)
 - [yojson](https://github.com/ocaml-community/yojson)
 - [extlib](https://github.com/ygrek/ocaml-extlib)
 
-## Checking the definitions and proofs
-
-We recommend installing the requirements via [OPAM](http://opam.ocaml.org/doc/Install.html):
-```
-opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-mathcomp-ssreflect.1.7.0 coq-mathcomp-fingroup.1.7.0
-```
-
-Then run:
-```
-make
-```
-This will build the whole project and check all the proofs.
-
-## Building the tools
-
-First install the Coq requirements as above, then install the OCaml requirements:
+After installing the Coq requirements, install the OCaml requirements:
 ```
 opam install ocamlbuild yojson extlib
 ```
-To build the regular tool, run
+To build the regular tool, run:
 ```
 make impacted
 ```
@@ -54,7 +71,6 @@ To try topological sorting, run:
 ```
 ./topfiltering.native test/new-topsort.json test/old-topsort.json
 ```
-
 To build the optimized tool:
 ```
 make impacted-rbt
