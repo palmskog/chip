@@ -44,10 +44,8 @@ move/negP/negP/eqP => Heq.
 case: ifP => Hxy; first by apply CompLt.
 move/negP: Hxy => Hxy.
 apply CompGt.
-case/orP: (ord_total x y).
-case => //.
-move/orP.
-case => //.
+case/orP: (ord_total x y) => //.
+case/orP => //.
 by move/eqP.
 Qed.
 

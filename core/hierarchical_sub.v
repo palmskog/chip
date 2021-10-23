@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect acyclic closure check change hierarchical.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect acyclic closure check change hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -118,7 +115,7 @@ Proof.
 move => v.
 rewrite /impactedV_sub.
 move/impactedP.
-move => [v0 [Hm Hc]].
+case => v0 Hm Hc.
 move: Hc.
 move/connect_rev.
 rewrite /= => Hc.
