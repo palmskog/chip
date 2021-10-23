@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import connect.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import connect.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -74,12 +71,9 @@ Hypothesis g_acyclic: acyclic.
 
 Lemma acyclic_no_self_loop : forall x, ~~ g x x.
 Proof.
-move => x.
-apply/negP.
-case => Hg.
+move => x; apply/negP => Hg.
 move/g_acyclic: (self_loop_cycle Hg).
-move/negP; case => /=.
-by apply/and3P; split.
+by move/negP; case => /=; apply/and3P.
 Qed.
 
 Lemma acyclic_diconnect : forall x y, diconnect g x y -> x = y.
@@ -261,13 +255,10 @@ have [p H_p] := diconnect_path_cycle H_neq H_di.
 by exists v, p.
 Qed.
 
-Lemma all_in_sccs :
- forall v, exists vs, vs \in sccs g /\ v \in vs.
+Lemma all_in_sccs v : exists vs, vs \in sccs g /\ v \in vs.
 Proof.
-move => v.
-have H_all := all_in_flatten v.
-move/flattenP: H_all => [vs [H_vs H_in]].
-by exists vs.
+move/flattenP: (all_in_flatten v).
+by case => vs H_vs H_in; exists vs.
 Qed.
 
 Lemma diconnect_neq_sccs :

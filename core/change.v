@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect acyclic closure check.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect acyclic closure check.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -210,10 +207,8 @@ case => Hi.
   move => [Hc [Hv Hi]].
   apply/negP => Hp.
   move: Hp.
-  move => Hc'.
-  case: Hc'.
   move/mapP.
-  move => [[v' b'] Hb].
+  case => [[v' b'] Hb].
   rewrite /=.
   case.
   move => Hv' Hb'.
@@ -267,7 +262,6 @@ rewrite map_inj_in_uniq.
     move: Hu.
     exact: map_uniq.
   * apply/negP.
-    case.
     move/hasP => [vr Hvr].
     move/mapP: Hvr => [vr' Hvr'].
     case: vr' Hvr' => v' r'.
@@ -494,7 +488,7 @@ have H_eq: f u = f' (val u).
   by exists [::].  
 apply/connectP.
 case: ifP.
-- move/connectP => [p [Hp Hl]].
+- case/connectP => p Hp Hl.
   have H_eq' := f_equal_g H_eq.
   exists p; last by [].
   clear Hl H_eq.
@@ -538,7 +532,7 @@ case: ifP.
 - move/connectP.
   move => Hex Hex'.
   case: Hex.
-  move: Hex' => [p [Hp Hl]].
+  case: Hex' => p Hp Hl.
   have H_eq' := f_equal_g H_eq.
   exists p; last by [].  
   clear Hl H_eq.

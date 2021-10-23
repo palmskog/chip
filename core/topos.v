@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect kosaraju acyclic.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect kosaraju acyclic.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -24,9 +21,7 @@ Hypothesis g_acyclic : acyclic g.
 
 Lemma ts_nth : forall x y : V,
  connect g x y ->
- before
-   ts
-   (nth x ts (find (diconnect g x) ts)) y.
+ before ts (nth x ts (find (diconnect g x) ts)) y.
 Proof.
 move => x y.
 move: (ts_all x).
@@ -126,7 +121,6 @@ move/orP; case.
   by rewrite inE.
 - move => Hy.
   apply/setCP.
-  case.
   move/setDP => [Hy' Hsy].
   by move/setCP: (Hs _ Hy).
 Qed.
@@ -199,7 +193,7 @@ move => x y Hc.
 apply: tseq_connect_before.
 - rewrite /acyclic => z p Hp.
   apply/negP.
-  case => Hcp.
+  move => Hcp.
   have Hpp: path g z p.
     move: p z Hp {Hcp}.
     elim => //=.

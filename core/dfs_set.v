@@ -1,13 +1,9 @@
-Require Import OrderedType.
-Require Import MSetInterface.
-Require Import MSetFacts.
-Require Import MSetRBT.
-
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import ordtype close_dfs.
+From Coq Require Import OrderedType.
+From Coq Require Import MSetInterface.
+From Coq Require Import MSetFacts.
+From Coq Require Import MSetRBT.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import ordtype close_dfs.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -48,7 +44,7 @@ move/negP/negP/eqP => Heq.
 case: ifP => Hxy; first by apply CompLt.
 move/negP: Hxy => Hxy.
 apply CompGt.
-move/orP: (total x y).
+case/orP: (ord_total x y).
 case => //.
 move/orP.
 case => //.
@@ -75,7 +71,7 @@ Module Type FinOrdType (Import FT : FinType).
 Parameter ordT : rel T.
 Parameter irr_ordT : irreflexive ordT.
 Parameter trans_ordT : transitive ordT.
-Parameter total_ordT : forall x y, [|| ordT x y, x == y | ordT y x].
+Parameter total_ordT : forall x y, x != y -> ordT x y || ordT y x.
 End FinOrdType.
 
 Module Type FinUsualOrderedType (FT : FinType) <: UsualOrderedType.
@@ -387,7 +383,7 @@ Module OrdinalFinOrdType (Import OFT : OrdinalFinType) <: FinOrdType OFT.
 Definition ordT : rel T := fun x y => ltn x y.
 Definition irr_ordT : irreflexive ordT := irr_ltn_nat.
 Definition trans_ordT : transitive ordT := trans_ltn_nat.
-Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] := total_ltn_nat.
+Definition total_ordT : forall x y, x != y -> ordT x y || ordT y x := semiconn_ltn_nat.
 End OrdinalFinOrdType.
 
 (* Instantiation test *)

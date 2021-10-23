@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect acyclic closure check change hierarchical.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import extra connect acyclic closure check change hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -224,8 +221,7 @@ rewrite map_inj_in_uniq.
     move: Hu.
     exact: map_uniq.
   * apply/negP.
-    case.
-    move/hasP => [vr Hvr].
+    case/hasP => vr Hvr.
     move/mapP: Hvr => [vr' Hvr'].
     case: vr' Hvr' => v' r'.
     rewrite mem_filter.

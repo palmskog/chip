@@ -1,14 +1,11 @@
-Require Import OrderedType.
-Require Import MSetInterface.
-Require Import MSetFacts.
-Require Import MSetRBT.
-Require Import String.
-
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import ordtype connect closure dfs_set string acyclic kosaraju topos check change check_seq check_seq_hierarchical.
+From Coq Require Import OrderedType.
+From Coq Require Import MSetInterface.
+From Coq Require Import MSetFacts.
+From Coq Require Import MSetRBT.
+From Coq Require Import String.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import ordtype connect closure dfs_set string acyclic kosaraju.
+From chip Require Import topos check change check_seq check_seq_hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -39,8 +36,8 @@ Definition ordT : rel V := fun x y => subltn x y.
 Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val x).
 Definition trans_ordT : transitive ordT :=
  fun x y z => @trans_ltn_nat (val x) (val y) (val z).
-Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
- fun x y => total_ltn_nat (val x) (val y).
+Definition total_ordT : forall x y, x != y -> ordT x y || ordT y x :=
+ fun x y => @semiconn_ltn_nat (val x) (val y).
 End VFinOrdType.
 
 Module VFinOrdUsualOrderedType <: FinUsualOrderedType VFinType :=
@@ -186,8 +183,8 @@ Definition ordT : rel U := fun x y => subltn x y.
 Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val x).
 Definition trans_ordT : transitive ordT :=
  fun x y z => @trans_ltn_nat (val x) (val y) (val z).
-Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
- fun x y => total_ltn_nat (val x) (val y).
+Definition total_ordT : forall x y, x != y -> ordT x y || ordT y x :=
+ fun x y => @semiconn_ltn_nat (val x) (val y).
 End UFinOrdType.
 
 Module UFinOrdUsualOrderedType <: FinUsualOrderedType UFinType :=
@@ -205,8 +202,8 @@ Definition ordT : rel V := fun x y => subltn x y.
 Definition irr_ordT : irreflexive ordT := fun x => irr_ltn_nat (val x).
 Definition trans_ordT : transitive ordT :=
  fun x y z => @trans_ltn_nat (val x) (val y) (val z).
-Definition total_ordT : forall x y, [|| ordT x y, x == y | ordT y x] :=
- fun x y => total_ltn_nat (val x) (val y).
+Definition total_ordT : forall x y, x != y -> ordT x y || ordT y x :=
+ fun x y => @semiconn_ltn_nat (val x) (val y).
 End VFinOrdType.
 
 Module VFinOrdUsualOrderedType <: FinUsualOrderedType VFinType :=
