@@ -21,10 +21,7 @@ publications:
   pub_doi: 10.1007/978-3-030-45237-7_9
 
 authors:
-- name: Cyril Cohen
-- name: Aleksandar Nanevski
 - name: Karl Palmskog
-- name: Laurent Théry
 
 maintainers:
 - name: Karl Palmskog
@@ -49,9 +46,13 @@ dependencies:
   description: |-
     [MathComp ssreflect 1.12 or later](https://math-comp.github.io)
 - opam:
-    name: coq-mathcomp-fingroup
+    name: coq-mathcomp-tarjan
   description: |-
-    [MathComp fingroup](https://math-comp.github.io)
+    [MathComp Tarjan and Kosaraju](https://github.com/math-comp/tarjan)    
+- opam:
+    name: coq-fcsl-pcm
+  description: |-
+    [FCSL PCM](https://github.com/imdea-software/fcsl-pcm)
 
 tested_coq_opam_versions:
 - version: 'coq-dev'
@@ -60,6 +61,10 @@ tested_coq_opam_versions:
   repo: 'mathcomp/mathcomp-dev'
 - version: 'coq-8.13'
   repo: 'mathcomp/mathcomp-dev'
+- version: '1.13.0-coq-8.14'
+  repo: 'mathcomp/mathcomp'
+- version: '1.13.0-coq-8.13'
+  repo: 'mathcomp/mathcomp'  
 - version: '1.12.0-coq-8.14'
   repo: 'mathcomp/mathcomp'
 - version: '1.12.0-coq-8.13'
@@ -124,13 +129,6 @@ build: |-
 documentation: |-
   ## Files
 
-  Coq files adapted and extended from work by [Cohen and Théry](https://github.com/CohenCyril/tarjan):
-  
-  - `core/extra.v`: auxiliary sequence lemmas
-  - `core/connect.v`: auxiliary connect and topological sort definitions and lemmas
-  - `core/kosaraju.v`: implementation and correctness proof of Kosaraju's strongly connected components algorithm
-  - `core/tarjan.v`: implementation and correctness proof of Tarjan's strongly connected components algorithm
-  
   Coq file adapted from work by [Nanevski](https://github.com/imdea-software/fcsl-pcm):
   
   - `core/ordtype.v`: ordered type definition for the Mathematical Components library
@@ -146,9 +144,6 @@ documentation: |-
   - `core/hierarchical_sub_correct.v`: correctness proofs for compositional strategy
   - `core/hierarchical_sub_pt.v`: improved hierarchical compositional strategy using partition of new vertices
   - `core/hierarchical_sub_pt_correct.v`: correctness proofs for improved compositional strategy
-  - `core/acyclic.v`: definition of and basic lemmas for acyclicity, parameterized acyclicity checker
-  - `core/kosaraju_acyclic.v`: acyclicity checking based on Kosaraju's algorithm
-  - `core/tarjan_acyclic.v`: acyclicity checking based on Tarjan's algorithm
   - `core/topos.v`: definitions and lemmas on topological sorting of acyclic graphs
   
   Coq implementation-related definitions and lemmas:

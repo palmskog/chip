@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import connect acyclic tarjan.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic tarjan_rank acyclic_tsorted.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -284,16 +281,16 @@ Lemma trivIset_tarjan :
   trivIset (tarjan (rgraph g)).
 Proof.
 rewrite tarjan_correct.
-exact: trivIset_gsccs.
+exact: trivIset_sccs.
 Qed.
 
 Lemma class_diconnected_tarjan :
   forall c, c \in tarjan (rgraph g) ->
-  exists x, forall y, (y \in c) = diconnect g x y.
+  exists x, forall y, (y \in c) = symconnect g x y.
 Proof.
 move => c.
 rewrite tarjan_correct.
-rewrite /gsccs /=.
+rewrite /sccs /=.
 rewrite /equivalence_partition /=.
 move/imsetP => [x Hx] Hc.
 exists x.
@@ -301,7 +298,7 @@ move => y.
 rewrite Hc inE.
 rewrite andb_idl //.
 set g' : rel V := grel (rgraph g).
-rewrite -(@eq_diconnect _ g') //.
+rewrite -(@eq_symconnect _ g') //.
 move => v1 v2.
 rewrite /g' /=.
 by rewrite mem_enum.
@@ -309,7 +306,7 @@ Qed.
 
 Lemma class_diconnected_tarjans :
   forall c, c \in tarjans (rgraph g) ->
-  exists x, forall y, (y \in c) = diconnect g x y.
+  exists x, forall y, (y \in c) = symconnect g x y.
 Proof.
 move => c.
 move/tarjansP => [scc Hsc].
@@ -324,12 +321,12 @@ Qed.
 Lemma cover_tarjan : cover (tarjan (rgraph g)) = [set: V].
 Proof.
 rewrite tarjan_correct.
-by rewrite cover_gsccs.
+by rewrite cover_sccs.
 Qed.
 
 Lemma all_in_cover_tarjan : forall v : V, v \in cover (tarjan (rgraph g)).
 Proof.
-by move => v; rewrite tarjan_correct cover_gsccs.
+by move => v; rewrite tarjan_correct cover_sccs.
 Qed.
 
 Lemma all_in_flatten_tarjans : forall v : V, v \in flatten (tarjans (rgraph g)).
@@ -340,7 +337,7 @@ Qed.
 
 Lemma enum_tarjan_non_empty : set0 \notin enum (tarjan (rgraph g)).
 Proof.
-have Hp := gsccs_partition (rgraph g).
+have Hp := sccs_partition (grel (rgraph g)).
 rewrite tarjan_correct.
 rewrite /partition in Hp.
 move/and3P: Hp.
@@ -369,10 +366,9 @@ Qed.
 Definition tarjans_acyclic :=
  sccs_acyclic (fun g => tarjans (rgraph g)) g.
 
-Lemma tarjans_acyclicP :
-  reflect (acyclic g) tarjans_acyclic.
+Lemma tarjans_acyclicE : tarjans_acyclic = @acyclic V g.
 Proof.
-apply/sccs_acyclicP.
+rewrite [LHS]sccs_acyclicE //.
 - exact: uniq_flatten_tarjans.
 - exact: all_in_flatten_tarjans.
 - exact: class_diconnected_tarjans.

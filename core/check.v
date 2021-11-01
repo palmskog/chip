@@ -1,5 +1,6 @@
-From mathcomp Require Import all_ssreflect.
-From chip Require Import extra connect close_dfs closure.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra.
+From chip Require Import close_dfs closure.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -122,14 +123,14 @@ split.
   move/closureP => [v Hv] Hc.
   apply/impactedVP.
   exists v => //.
-  by apply/connect_rev.
+  by rewrite -connect_rev.
 apply/subsetP.
 move => x.
 move/impactedVP => [v Hv] Hc.
 rewrite inE /=.
 apply/closureP.
 exists v => //.
-by move/connect_rev: Hc.
+by rewrite connect_rev.
 Qed.
 
 Lemma not_impactedP (modified : {set V}) x :
@@ -141,7 +142,7 @@ apply: (iffP idP).
 - move/impactedVP => Hex.
   move => v Hc.
   apply/negP => Hv.
-  apply connect_rev in Hc.
+  rewrite connect_rev in Hc.
   case: Hex.
   by exists v.
 - move => Hc.
@@ -149,8 +150,7 @@ apply: (iffP idP).
   move => Hx.
   move/impactedVP: Hx.
   move => [v Hv].
-  move/connect_rev => /=.
-  have ->: rel_of_simpl_rel [rel x' y' | g^-1 y' x'] = g by [].
+  rewrite -connect_rev /=.
   by move/Hc/negP.
 Qed.
 
@@ -176,7 +176,8 @@ Definition impactedV' : {set V'} := impactedVV' modifiedV :|: freshV'.
 Definition impacted_fresh : seq V' := enum impactedV'.
 
 Lemma impactedV'P x :
-  reflect ((x \in impactedVV' modifiedV /\ x \notin freshV') \/ (x \in freshV' /\ x \notin impactedVV' modifiedV))
+  reflect ((x \in impactedVV' modifiedV /\ x \notin freshV') \/
+           (x \in freshV' /\ x \notin impactedVV' modifiedV))
           (x \in impactedV').
 Proof.
 apply: (iffP idP).
@@ -295,18 +296,14 @@ split.
   apply/impactedP.
   move/impactedP: Hx => [v Hv] Hc.
   exists v => //.
-  apply connect_rev.
-  rewrite -g1_g2_connect.
-  by apply connect_rev.
+  by rewrite connect_rev -g1_g2_connect connect_rev.
 - apply/subsetP.
   move => x Hx.
   apply: rclosed_impacted; eauto.
   apply/impactedP.
   move/impactedP: Hx => [v Hv] Hc.
   exists v => //.
-  apply connect_rev.
-  rewrite g1_g2_connect.
-  by apply connect_rev.
+  by rewrite connect_rev g1_g2_connect connect_rev.
 Qed.
 
 Lemma connect_impactedV'_eq :

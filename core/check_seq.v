@@ -1,9 +1,66 @@
-From mathcomp Require Import all_ssreflect.
-From chip Require Import extra closure connect check change acyclic kosaraju topos.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic Kosaraju acyclic_tsorted.
+From chip Require Import closure check change.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+Section AcyclicSub.
+
+Variable V : finType.
+Variable g : rel V.
+
+Hypothesis g_acyclic : acyclic g.
+
+Variable P : pred V.
+
+Local Notation I := (sig_finType P).
+
+Local Notation gsub := [rel x y : I | g (val x) (val y)].
+
+Lemma symconnect_sub_val x y : 
+  symconnect gsub x y ->
+  symconnect g (val x) (val y).
+Proof.
+move/andP => [cx cy]; apply/andP; split.
+- move/connectP: cx => [p pathp lastp].
+  apply/connectP.
+  exists (map val p); last by rewrite last_map lastp.
+  move: pathp {cy lastp}.
+  elim: p x => //.
+  move => z p IH x.
+  move/andP => [gxz pathp].
+  have IH' := IH _ pathp.
+  by apply/andP.
+- move/connectP: cy => [p pathp lastp].
+  apply/connectP.
+  exists (map val p); last by rewrite last_map lastp.
+  move: pathp {cx lastp}.
+  elim: p y => //.
+  move => z p IH y.
+  move/andP => [gyz pathp].
+  have IH' := IH _ pathp.
+  by apply/andP.
+Qed.
+
+Lemma sub_acyclic : acyclic gsub.
+Proof.
+apply/acyclicP; split.
+- move => x; apply/negP=> sgxx.
+  have gxx := (acyclic_cyclexx _ g_acyclic).
+  by move/negP: (gxx (val x)).
+- move/acyclicP: g_acyclic => [gxx gacl].
+  move/preacyclicP: gacl => gpre.
+  apply/preacyclicP.
+  move => x y symc.
+  have symcg := gpre (val x) (val y).
+  apply val_inj.
+  apply: symcg.
+  exact: symconnect_sub_val.
+Qed.
+
+End AcyclicSub.
 
 Section CheckedSeq.
 
@@ -227,37 +284,13 @@ Lemma ts_rev_before : forall (x y : V'),
   before ts_g'rev y x.
 Proof.
 move => x y Hc.
-apply: ts_connect_before; eauto.
+apply: (@acyclic_connect_before _ (grel g'rev)).
+- rewrite acyclic_rev /= -(@eq_acyclic _ g') //.
+  move => x0 y0.
+  exact: (g'_g'rev y0 x0).
 - exact: ts_all.
-- apply: acyclic_rev.
-  move => z p Hp.
-  apply/negP => Hcp.
-  have Hpp: path g' z p.
-    move: p z Hp {Hcp}.
-    elim => //=.
-    move => v p IH z.
-    move/andP => [Hz Hp].
-    have Hz': grel g'rev v z by [].
-    move: Hz'.
-    have Hgvz := g'_g'rev v z.
-    rewrite /= in Hgvz.
-    rewrite /= Hgvz /= => Hz'.
-    apply/andP.
-    split => //.
-    exact: IH.
-  move/negP: (g'_acyclic Hpp).
-  case.
-  move: Hcp.
-  rewrite /= 2!rcons_path.
-  move/andP => [Hcp Hl].
-  apply/andP.
-  have Hz': grel g'rev z (last z p) by [].
-  move: Hz'.
-  have Hgzl := g'_g'rev z (last z p).
-  rewrite /= in Hgzl.
-  rewrite /= -Hgzl /= => Hg.
-  by split.
-- apply/connect_rev.
+- apply: ts_tsorted.
+- rewrite -connect_rev.
   rewrite -(@eq_connect _ g') //.
   move => z0 z1.
   have ->: (z0 \in g'rev z1) = grel g'rev z1 z0 by [].
@@ -338,86 +371,19 @@ Lemma ts_g'rev_imf_before : forall (x y : V'_imf),
   before ts_g'rev_imf y x.
 Proof.
 move => x y Hc.
-apply: ts_connect_before; eauto.
+apply: (@acyclic_connect_before _ (grel g'rev_imf)).
+- rewrite acyclic_rev /= -(@eq_acyclic _ [rel x y | g' (val x) (val y)]) //.
+  * exact: sub_acyclic.
+  * move => x0 y0.
+    rewrite /g'rev_imf.
+    have Hxx := g'_g'rev (val y0) (val x0).
+    rewrite /= in Hxx.
+    rewrite /= Hxx.
+    set gy0 := g'rev _.
+    apply/idP/idP; admit.
 - exact: ts_all.
-- apply: acyclic_rev.
-  move => z p Hp.
-  apply/negP => Hc'.
-  have Hp': path g' (val z) [seq (val v) | v <- p].
-    elim: p z Hp {Hc'} => //=.
-    move => v p IH z.
-    move/andP => [Hz Hp].
-    move: Hz.
-    rewrite /g'rev_imf => Hz.
-    apply/andP.
-    split; last by apply: IH.
-    suff Hsuff: grel g'rev (val v) (val z). 
-      have Hgvz := g'_g'rev (val v) (val z).
-      rewrite /= in Hgvz.
-      rewrite /= in Hsuff.
-      by rewrite -Hgvz in Hsuff.
-    move: Hz.
-    rewrite /=.
-    elim: (g'rev _) => //=.
-    move => v' l.
-    rewrite /oapp /= => IH'.
-    have H_sp := (insubP [subType of V'_imf] v').
-    destruct H_sp => //=.
-    * rewrite insubT.
-      move/orP.
-      case.
-      + move/eqP =>->.
-        rewrite SubK in_cons.
-        by apply/orP; left.
-      + move => Hz.
-        rewrite in_cons.
-        apply/orP.
-        by right; apply: IH'.
-    * rewrite insubN //.
-      move/IH' => Hz.
-      by apply/orP; right.
-  move/negP: (g'_acyclic Hp').
-  case.
-  move: Hc'.
-  rewrite /= 2!rcons_path.
-  move/andP => [Hc' Hl].
-  apply/andP.
-  split => //.
-  move: Hl.
-  rewrite /g'rev_imf /= => Hl.
-  suff Hsuff: grel g'rev (val z) (last (sval z) [seq sval v | v <- p]).
-    move: Hsuff.
-    have Hgr := g'_g'rev (val z) (last (sval z) [seq sval v | v <- p]).
-    rewrite /=.
-    rewrite /= in Hgr.
-    by rewrite Hgr.
-  rewrite /=.
-  move: Hl.
-  set l := g'rev _.
-  move: l.
-  elim: p z {Hp Hp' Hc'} => //=.
-  * move => z l.
-    elim: l z => //=.
-    move => v l IH z.
-    rewrite /oapp /=.
-    have H_sp := (insubP [subType of V'_imf] v).
-    destruct H_sp => //=.
-    * rewrite insubT.
-      move/orP.
-      case.
-      + move/eqP =>->.
-        rewrite SubK in_cons.
-        by apply/orP; left.
-      + move => Hz.
-        rewrite in_cons.
-        apply/orP.
-        by right; apply: IH.
-    * rewrite insubN //.
-      move/IH => Hz.
-      by apply/orP; right.
-  * move => v l IH v0 l' Hl.
-    exact: IH.
-- apply: connect_rev.
+- exact: ts_tsorted.
+- rewrite connect_rev.
   rewrite -(@eq_connect _ [rel x y | g' (val x) (val y)]) //.
   move => x' y' /=.
   move: (g'_g'rev (val y') (val x')).
@@ -439,7 +405,7 @@ apply: ts_connect_before; eauto.
   rewrite -Hs in i.
   case/negP: i.
   by case: x' {IH' Hx Hs}.
-Qed.
+Admitted.
 
 Definition ts_g'rev_imf_checkable :=
  [seq x <- ts_g'rev_imf | checkable' (val x)].

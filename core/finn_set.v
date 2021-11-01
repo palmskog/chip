@@ -1,11 +1,8 @@
-From Coq Require Import OrderedType.
-From Coq Require Import MSetInterface.
-From Coq Require Import MSetFacts.
-From Coq Require Import MSetRBT.
-From Coq Require Import String.
-From mathcomp Require Import all_ssreflect.
-From chip Require Import ordtype connect closure dfs_set string acyclic kosaraju.
-From chip Require Import topos check change check_seq check_seq_hierarchical.
+From Coq Require Import OrderedType MSetInterface MSetFacts MSetRBT String.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic Kosaraju acyclic_tsorted.
+From chip Require Import ordtype closure dfs_set string.
+From chip Require Import check change check_seq check_seq_hierarchical.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

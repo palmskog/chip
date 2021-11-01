@@ -1,10 +1,7 @@
-Require Import String.
-
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import connect acyclic string kosaraju topos close_dfs check change check_seq check_seq_hierarchical.
+From Coq Require Import String.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic Kosaraju acyclic_tsorted.
+From chip Require Import string close_dfs check change check_seq check_seq_hierarchical.
 
 Section Finn.
 

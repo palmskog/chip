@@ -1,7 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-From chip
-Require Import string finn.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import string finn.
 
 Require Import ExtrOcamlBasic.
 Require Import ExtrOcamlNatInt.

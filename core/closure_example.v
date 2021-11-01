@@ -1,8 +1,6 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect acyclic kosaraju_acyclic closure.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic acyclic_tsorted.
+From chip Require Import closure.
 
 Inductive food :=
 | rigatoni_arrabiata
@@ -102,7 +100,7 @@ end.
 
 Definition food_rel := grel food_depends.
 
-Definition food_acyclic := kosaraju_acyclic food_depends.
+Definition food_acyclic := kosaraju_acyclic food_rel.
 
 Notation food_rel_rev := [rel x y | food_rel y x].
 

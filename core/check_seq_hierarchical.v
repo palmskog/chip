@@ -1,5 +1,6 @@
-From mathcomp Require Import all_ssreflect.
-From chip Require Import extra connect closure check check_seq.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic.
+From chip Require Import closure check check_seq.
 From chip Require Import change hierarchical hierarchical_sub hierarchical_sub_pt.
 From chip Require Import hierarchical_sub_correct hierarchical_sub_pt_correct tarjan_acyclic.
 

@@ -1,8 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import close_dfs.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import close_dfs.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

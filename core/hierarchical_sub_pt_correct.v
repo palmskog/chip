@@ -1,8 +1,7 @@
-From mathcomp
-Require Import all_ssreflect.
-
-From chip
-Require Import extra connect acyclic closure check change hierarchical_sub hierarchical_sub_correct hierarchical_sub_pt.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic.
+From chip Require Import closure check change hierarchical_sub.
+From chip Require Import hierarchical_sub_correct hierarchical_sub_pt.
 
 Set Implicit Arguments.
 Unset Strict Implicit.

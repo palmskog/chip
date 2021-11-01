@@ -18,11 +18,25 @@ coqdoc: $(GLOBFILES) $(VFILES) $(CSSFILES) $(JSFILES) $(HTMLFILES)
 	$(HIDE)cp $(CSSFILES) $(JSFILES) $(COQDOCDIR)
 .PHONY: coqdoc
 
+impacted:
+	+$(MAKE) -C extraction/impacted filtering.native topfiltering.native hierarchical.native
+
+impacted-rbt:
+	+$(MAKE) -C extraction/impacted-rbt filtering.native topfiltering.native hierarchical.native
+
 $(IMPACTEDML): extraction/impacted/coq/extract_impacted.v core/finn.vo
 	$(COQC) $(COQDEBUG) $(COQFLAGS) $(COQLIBS) extraction/impacted/coq/extract_impacted.v
 
 $(IMPACTEDRBTML): extraction/impacted-rbt/coq/extract_impacted_rbt.v core/finn_set.vo
 	$(COQC) $(COQDEBUG) $(COQFLAGS) $(COQLIBS) extraction/impacted-rbt/coq/extract_impacted_rbt.v
 
+resources/index.html: resources/index.md
+	pandoc -s -o $@ $<
+
 clean::
-	rm -f $(IMPACTEDML) $(IMPACTEDRBTML)
+	$(HIDE)rm -f $(IMPACTEDML) $(IMPACTEDRBTML)
+
+.PHONY: impacted impacted-rbt coqdoc $(IMPACTEDML) $(IMPACTEDRBTML)
+
+.NOTPARALLEL: $(IMPACTEDML)
+.NOTPARALLEL: $(IMPACTEDRBTML)

@@ -1,8 +1,5 @@
-From Coq Require Import OrderedType.
-From Coq Require Import MSetInterface.
-From Coq Require Import MSetFacts.
-From Coq Require Import MSetRBT.
-From mathcomp Require Import all_ssreflect.
+From Coq Require Import OrderedType MSetInterface MSetFacts MSetRBT.
+From mathcomp.ssreflect Require Import all_ssreflect.
 From chip Require Import ordtype close_dfs.
 
 Set Implicit Arguments.

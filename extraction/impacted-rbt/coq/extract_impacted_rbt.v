@@ -1,7 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-From chip
-Require Import string dfs_set finn_set.
+From mathcomp Require Import all_ssreflect.
+From chip Require Import string dfs_set finn_set.
 
 Require Import ExtrOcamlBasic.
 Require Import ExtrOcamlNatInt.

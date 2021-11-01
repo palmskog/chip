@@ -1,6 +1,5 @@
-From mathcomp
-Require Import all_ssreflect.
-Require Import Ascii String.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From Coq Require Import Ascii String.
 
 Definition eq_ascii (a a' : ascii) := nat_of_ascii a == nat_of_ascii a'.
 

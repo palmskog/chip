@@ -1,41 +1,16 @@
-include Makefile.ml-files
-
-all: default
-
-default: Makefile.coq
-	$(MAKE) -f Makefile.coq
-
-quick: Makefile.coq
-	$(MAKE) -f Makefile.coq quick
-
-coqdoc: Makefile.coq
-	$(MAKE) -f Makefile.coq coqdoc
-
-install: Makefile.coq
-	$(MAKE) -f Makefile.coq install
+all: Makefile.coq
+	@+$(MAKE) -f Makefile.coq all
 
 clean: Makefile.coq
-	$(MAKE) -f Makefile.coq cleanall
-	rm -f Makefile.coq Makefile.coq.conf
-	$(MAKE) -C extraction/impacted clean
-	$(MAKE) -C extraction/impacted-rbt clean
-
-impacted:
-	+$(MAKE) -C extraction/impacted filtering.native topfiltering.native hierarchical.native
-
-impacted-rbt:
-	+$(MAKE) -C extraction/impacted-rbt filtering.native topfiltering.native hierarchical.native
+	@+$(MAKE) -f Makefile.coq cleanall
+	@rm -f Makefile.coq Makefile.coq.conf
 
 Makefile.coq: _CoqProject
-	coq_makefile -f _CoqProject -o Makefile.coq
+	$(COQBIN)coq_makefile -f _CoqProject -o Makefile.coq
 
-$(IMPACTEDML) $(IMPACTEDRBTML): Makefile.coq
-	$(MAKE) -f Makefile.coq $@
+force _CoqProject Makefile: ;
 
-resources/index.html: resources/index.md
-	pandoc -s -o $@ $<
+%: Makefile.coq force
+	@+$(MAKE) -f Makefile.coq $@
 
-.PHONY: all default quick clean impacted coqdoc $(IMPACTEDML) $(IMPACTEDRBTML)
-
-.NOTPARALLEL: $(IMPACTEDML)
-.NOTPARALLEL: $(IMPACTEDRBTML)
+.PHONY: all clean force

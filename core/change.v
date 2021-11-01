@@ -1,9 +1,40 @@
-From mathcomp Require Import all_ssreflect.
-From chip Require Import extra connect acyclic closure check.
+From mathcomp.ssreflect Require Import all_ssreflect.
+From mathcomp.tarjan Require Import extra acyclic.
+From chip Require Import closure check.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
+
+Lemma uniq_prod_eq : 
+ forall (T1 T2 : eqType) (s : seq (T1 * T2)) (x : T1) (y z : T2),
+  uniq [seq xy.1 | xy <- s] -> (x, y) \in s -> (x, z) \in s ->
+  y = z.
+Proof.
+move => T1 T2.
+elim => //=.
+case => x y s IH /= x0 y0 z.
+move/andP => [Hx Hu].
+rewrite 2!in_cons.
+move/orP; case => Hx0; move/orP; case => Hy0.
+- move/eqP: Hx0; case.
+  move/eqP: Hy0; case.
+  by move =>->->.
+- move/eqP: Hx0 Hy0; case.
+  move =>->-> Hx'.
+  move/negP: Hx.
+  case.
+  apply/mapP.
+  by exists (x, z).
+- move/eqP: Hy0 Hx0; case.
+  move =>->-> Hx'.
+  move/negP: Hx.
+  case.
+  apply/mapP.
+  by exists (x, y0).
+- move: Hx0 Hy0.
+  exact: IH.
+Qed.
 
 Section Changed.
 
@@ -472,20 +503,20 @@ move => Hv.
 have Hv': forall v : V, connect g u v -> forall v', gV' (val v) v' = g' (val v) v'.
   move => v' Hc.
   apply: Hv.
-  exact: connect_rev.
+  by rewrite connect_rev.
 move {Hv}.
 move => Hvf.
 have Hvf': forall v' : V, connect g u v' -> f v' == f' (val v').
   move => v' Hc.
   apply: Hvf.
-  exact: connect_rev.
+  by rewrite connect_rev.
 move {Hvf}.
 move => v'.
 have H_eq: f u = f' (val u).
   apply/eqP.
   apply: Hvf'.
   apply/connectP.
-  by exists [::].  
+  by exists [::].
 apply/connectP.
 case: ifP.
 - case/connectP => p Hp Hl.
@@ -534,7 +565,7 @@ case: ifP.
   case: Hex.
   case: Hex' => p Hp Hl.
   have H_eq' := f_equal_g H_eq.
-  exists p; last by [].  
+  exists p; last by [].
   clear Hl H_eq.
   elim: p u Hp Hv' Hvf' H_eq' => //=.
   move => v0 p IH u.
@@ -577,7 +608,7 @@ Proof.
 move => Hgc Hc.
 apply/eqP.
 apply: Hgc.
-apply/connect_rev.
+rewrite connect_rev.
 move: Hc.
 move/connectP => [p Hp] Hl.
 apply/connectP.
